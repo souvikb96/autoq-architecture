@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoQ - Next-Gen Test Automation & Orchestration Platform</title>
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+  <!-- App Container -->
+  <div id="app" class="app-layout">
+    
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="url(#brand-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="brand-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6366F1"/>
+                <stop offset="1" stop-color="#06B6D4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <span class="brand-name">AutoQ <span class="badge badge-accent">Engine v2</span></span>
+          <span class="brand-sub">Kyxo Automation Platform</span>
+        </div>
+      </div>
+
+      <div class="nav-section-title">TEST MANAGEMENT</div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-screen="dashboard" id="nav-dashboard">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Dashboard</span>
+        </button>
+        <button class="nav-item" data-screen="library" id="nav-library">
+          <span class="nav-icon">📁</span>
+          <span class="nav-label">Test Library & Suites</span>
+          <span class="nav-pill">248</span>
+        </button>
+        <button class="nav-item" data-screen="detail" id="nav-detail">
+          <span class="nav-icon">📑</span>
+          <span class="nav-label">Test Case Detail</span>
+        </button>
+        <button class="nav-item" data-screen="authoring" id="nav-authoring">
+          <span class="nav-icon">✨</span>
+          <span class="nav-label">AI Authoring Studio</span>
+          <span class="badge badge-sparkle">DevTools</span>
+        </button>
+      </nav>
+
+      <div class="nav-section-title">ORCHESTRATION & RUNS</div>
+      <nav class="sidebar-nav">
+        <button class="nav-item" data-screen="run-builder" id="nav-run-builder">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Run Builder</span>
+        </button>
+        <button class="nav-item" data-screen="results" id="nav-results">
+          <span class="nav-icon">🚀</span>
+          <span class="nav-label">Execution & Sandboxes</span>
+          <span class="pulse-indicator"></span>
+        </button>
+        <button class="nav-item" data-screen="triage" id="nav-triage">
+          <span class="nav-icon">🔍</span>
+          <span class="nav-label">AI Failure Triage</span>
+          <span class="nav-pill pill-alert">3 Need Review</span>
+        </button>
+      </nav>
+
+      <div class="nav-section-title">ARCHITECTURE SPEC</div>
+      <nav class="sidebar-nav">
+        <button class="nav-item" data-screen="architecture" id="nav-architecture">
+          <span class="nav-icon">🏛️</span>
+          <span class="nav-label">System Architecture</span>
+          <span class="badge badge-subtle">Engineering Review</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Sandbox Status Card -->
+      <div class="sidebar-footer">
+        <div class="sandbox-cluster-card">
+          <div class="cluster-status-row">
+            <span class="status-dot online"></span>
+            <span class="cluster-title">Azure AKS Sandboxes</span>
+          </div>
+          <div class="cluster-metrics">
+            <div class="metric-pair">
+              <span class="metric-lbl">Active Pods</span>
+              <span class="metric-val" id="sbx-active-pods">4 / 16</span>
+            </div>
+            <div class="metric-pair">
+              <span class="metric-lbl">Warm Pool</span>
+              <span class="metric-val text-success">Healthy</span>
+            </div>
+          </div>
+          <div class="cluster-progress-bar">
+            <div class="cluster-progress-fill" style="width: 25%;"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Stage -->
+    <div class="main-wrapper">
+      <!-- Top Global Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="icon-btn mobile-menu-toggle" id="btn-toggle-sidebar" title="Toggle Navigation">☰</button>
+          <div class="breadcrumb" id="global-breadcrumb">
+            <span class="bc-crumb">AutoQ</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-crumb active" id="bc-current-page">Dashboard</span>
+          </div>
+        </div>
+
+        <div class="topbar-center">
+          <div class="global-search-box">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="global-search-input" placeholder="Search test cases, requirements (KYX-102), runs, or traces... (Press /)" />
+            <kbd class="kbd-hint">/</kbd>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Global Engine Selector Tag -->
+          <div class="engine-badge-tag">
+            <span class="engine-dot playwright" id="topbar-engine-dot"></span>
+            <span>Engine: </span>
+            <select class="select-control" id="topbar-engine-select" onchange="setGlobalEngine(this.value)" style="background: transparent; border: none; font-weight: 700; color: #fff; cursor: pointer; padding: 2px 4px; outline: none;">
+              <option value="playwright" selected>Playwright v1.48</option>
+              <option value="cypress">Cypress 13.x</option>
+              <option value="selenium">Selenium 4.x</option>
+            </select>
+          </div>
+
+          <!-- Quick Run CTA -->
+          <button class="btn btn-primary" id="btn-quick-run-modal">
+            <span class="btn-icon">▶</span>
+            <span>Trigger Run</span>
+          </button>
+
+          <!-- User / Organization Profile -->
+          <div class="user-profile-badge">
+            <div class="avatar">SB</div>
+            <div class="user-meta">
+              <span class="user-name">Souvik B.</span>
+              <span class="user-role">Dev & QA Lead</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- View Container (Multi-screen views) -->
+      <main class="content-body">
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 1: DASHBOARD -->
+        <!-- ========================================================================= -->
+        <section class="screen-view active" id="screen-dashboard">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Automation Intelligence Dashboard</h1>
+              <p class="view-subtitle">Live health overview of end-to-end suites, Azure execution clusters, and AI triage queue.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" id="btn-refresh-dashboard">🔄 Refresh</button>
+              <button class="btn btn-outline" id="btn-export-qa-report">📋 Export Executive QA Report</button>
+            </div>
+          </div>
+
+          <!-- KPI Metrics Row -->
+          <div class="metrics-grid">
+            <div class="metric-card card-gradient-purple">
+              <div class="metric-header">
+                <span class="metric-name">Pass Rate (Last 24h)</span>
+                <span class="metric-badge trend-up">↑ 4.2%</span>
+              </div>
+              <div class="metric-large">96.4%</div>
+              <div class="metric-footer">
+                <span>1,248 tests executed</span>
+                <span class="text-muted">45 failures</span>
+              </div>
+            </div>
+
+            <div class="metric-card card-gradient-blue">
+              <div class="metric-header">
+                <span class="metric-name">Average Execution Duration</span>
+                <span class="metric-badge trend-neutral">Sharded (4x)</span>
+              </div>
+              <div class="metric-large">2m 45s</div>
+              <div class="metric-footer">
+                <span>Fastest: 42s</span>
+                <span class="text-success">Saved 12m via parallel shards</span>
+              </div>
+            </div>
+
+            <div class="metric-card card-gradient-amber">
+              <div class="metric-header">
+                <span class="metric-name">Self-Healed Tests (AI)</span>
+                <span class="metric-badge badge-warning">Needs Approval</span>
+              </div>
+              <div class="metric-large">7</div>
+              <div class="metric-footer">
+                <span>3 pending human sign-off</span>
+                <span class="text-accent">Zero broken CI runs</span>
+              </div>
+            </div>
+
+            <div class="metric-card card-gradient-cyan">
+              <div class="metric-header">
+                <span class="metric-name">Traceability Coverage</span>
+                <span class="metric-badge trend-up">Kyxo STLC</span>
+              </div>
+              <div class="metric-large">98.1%</div>
+              <div class="metric-footer">
+                <span>158 of 161 Requirements automated</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mid Section: Active Runs & Failure Class Distribution -->
+          <div class="dashboard-split-grid">
+            <!-- Left: Recent Execution History -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title-group">
+                  <h3 class="panel-title">Recent Test Runs</h3>
+                  <span class="badge badge-subtle">Orchestrated runs across CI & UI</span>
+                </div>
+                <button class="btn btn-sm btn-outline" onclick="navigateToScreen('results')">View All Runs →</button>
+              </div>
+              <div class="table-container">
+                <table class="data-table" id="table-recent-runs">
+                  <thead>
+                    <tr>
+                      <th>Run ID</th>
+                      <th>Suite / Scope</th>
+                      <th>Trigger Source</th>
+                      <th>Environment</th>
+                      <th>Duration</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="clickable-row" onclick="navigateToScreen('results')">
+                      <td><span class="code-pill">RUN-2026-1042</span></td>
+                      <td><strong>Full Regression Suite</strong> <span class="badge badge-sm">184 tests</span></td>
+                      <td><span class="badge badge-trigger-gh">GitHub Actions #412</span></td>
+                      <td><span class="env-tag env-staging">Staging-EastUS</span></td>
+                      <td>2m 45s</td>
+                      <td><span class="status-pill status-pass">Passed (182/184)</span></td>
+                      <td><button class="btn btn-xs btn-outline">Details</button></td>
+                    </tr>
+                    <tr class="clickable-row" onclick="navigateToScreen('triage')">
+                      <td><span class="code-pill">RUN-2026-1041</span></td>
+                      <td><strong>Checkout & Payment Smoke</strong> <span class="badge badge-sm">24 tests</span></td>
+                      <td><span class="badge badge-trigger-chat">DevTools Chat</span></td>
+                      <td><span class="env-tag env-dev">Dev-Preview-04</span></td>
+                      <td>42s</td>
+                      <td><span class="status-pill status-fail">1 Failed (Triage ready)</span></td>
+                      <td><button class="btn btn-xs btn-accent">Review AI Fix</button></td>
+                    </tr>
+                    <tr class="clickable-row" onclick="navigateToScreen('results')">
+                      <td><span class="code-pill">RUN-2026-1040</span></td>
+                      <td><strong>User Auth & RBAC Flow</strong> <span class="badge badge-sm">38 tests</span></td>
+                      <td><span class="badge badge-trigger-manual">Manual Run</span></td>
+                      <td><span class="env-tag env-staging">Staging-EastUS</span></td>
+                      <td>1m 12s</td>
+                      <td><span class="status-pill status-pass">100% Passed</span></td>
+                      <td><button class="btn btn-xs btn-outline">Details</button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right: AI Failure Classification Breakdown -->
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title-group">
+                  <h3 class="panel-title">Automated Failure Classification</h3>
+                  <span class="badge badge-sparkle">Arch Decision #11</span>
+                </div>
+              </div>
+              <div class="triage-summary-body">
+                <p class="text-secondary text-sm">Every failure is auto-classified so teams never waste hours manually guessing root causes:</p>
+
+                <div class="classification-bars">
+                  <div class="class-item" onclick="navigateToScreen('triage')">
+                    <div class="class-meta">
+                      <span class="class-label"><span class="badge-dot dot-red"></span> Real Product Bug</span>
+                      <span class="class-count">2 Defects Raised</span>
+                    </div>
+                    <div class="prog-bar"><div class="prog-fill fill-red" style="width: 40%;"></div></div>
+                    <span class="class-action-hint">Auto-drafted Jira defect with Playwright trace attachment</span>
+                  </div>
+
+                  <div class="class-item" onclick="navigateToScreen('triage')">
+                    <div class="class-meta">
+                      <span class="class-label"><span class="badge-dot dot-amber"></span> Outdated Test (DOM / Flow Changed)</span>
+                      <span class="class-count">3 Fixes Generated</span>
+                    </div>
+                    <div class="prog-bar"><div class="prog-fill fill-amber" style="width: 60%;"></div></div>
+                    <span class="class-action-hint">AI self-healing proposed code changes with git diff</span>
+                  </div>
+
+                  <div class="class-item">
+                    <div class="class-meta">
+                      <span class="class-label"><span class="badge-dot dot-blue"></span> Environment / Network 502</span>
+                      <span class="class-count">0 Detected</span>
+                    </div>
+                    <div class="prog-bar"><div class="prog-fill fill-blue" style="width: 5%;"></div></div>
+                    <span class="class-action-hint">Auto-retried in fresh sandbox without developer intervention</span>
+                  </div>
+
+                  <div class="class-item">
+                    <div class="class-meta">
+                      <span class="class-label"><span class="badge-dot dot-purple"></span> Flaky Selector</span>
+                      <span class="class-count">1 Quarantined</span>
+                    </div>
+                    <div class="prog-bar"><div class="prog-fill fill-purple" style="width: 20%;"></div></div>
+                    <span class="class-action-hint">Quarantined to unblock build while author is notified</span>
+                  </div>
+                </div>
+
+                <div class="panel-footer-action">
+                  <button class="btn btn-outline btn-block" onclick="navigateToScreen('triage')">Open AI Triage Workspace →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 2: TEST LIBRARY & SUITES -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-library">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Test Library & Suites</h1>
+              <p class="view-subtitle">Hierarchical test repository linked with Kyxo requirements and Git automation code.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" onclick="openNewRequirementModal()">🎯 + New Requirement</button>
+              <button class="btn btn-primary" onclick="openNewTestCaseModal()">+ New Test Case</button>
+            </div>
+          </div>
+
+          <!-- Filter / Search Controls -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <span class="filter-lbl">Module / Epic:</span>
+              <select class="select-control" id="filter-module-select" onchange="onLibraryModuleFilterChange(this.value)">
+                <option value="all">All Modules & Epics</option>
+                <option value="payments">Checkout & Payments (42 tests)</option>
+                <option value="auth">Identity & Auth (34 tests)</option>
+                <option value="catalog">Storefront & Catalog (58 tests)</option>
+                <option value="orders">Orders & Invoicing (26 tests)</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <span class="filter-lbl">Suite:</span>
+              <select class="select-control" id="filter-suite-select">
+                <option value="all">All Suites (248)</option>
+                <option value="smoke">Smoke Suite (24)</option>
+                <option value="regression">Regression Suite (184)</option>
+                <option value="payments">Billing & Payments (40)</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <span class="filter-lbl">Engine:</span>
+              <select class="select-control" id="filter-engine-select">
+                <option value="all">All Engines</option>
+                <option value="playwright">Playwright (Default - 230)</option>
+                <option value="cypress">Cypress (18)</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <span class="filter-lbl">Link Status:</span>
+              <select class="select-control" id="filter-trace-select">
+                <option value="all">All</option>
+                <option value="linked">Linked to Requirement (242)</option>
+                <option value="unlinked">Unlinked (6)</option>
+              </select>
+            </div>
+
+            <div class="filter-spacer"></div>
+            <div class="filter-search">
+              <input type="text" class="input-control" id="library-search" placeholder="Filter tests..." />
+            </div>
+          </div>
+
+          <!-- Dynamic Active Module Scope Banner -->
+          <div id="library-module-banner-container"></div>
+
+          <!-- Test Cases Table -->
+          <div class="panel">
+            <div class="table-container">
+              <table class="data-table" id="table-test-library">
+                <thead>
+                  <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="check-all-tests" /></th>
+                    <th>Test ID & Name</th>
+                    <th>Module & Epic</th>
+                    <th>Linked Requirement (Kyxo)</th>
+                    <th>Engine & Git Script</th>
+                    <th>Tags</th>
+                    <th>Last Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="library-table-body">
+                  <!-- Dynamically populated / interactive rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Library Table Footer -->
+            <div class="table-pagination-footer">
+              <div class="selected-counter" id="selected-counter">0 tests selected</div>
+              <div class="bulk-actions" id="bulk-actions" style="display: none;">
+                <button class="btn btn-sm btn-primary" onclick="runSelectedTests()">Run Selected (0) in Sandboxes</button>
+                <button class="btn btn-sm btn-outline">Add to Suite</button>
+              </div>
+              <div class="pagination-info">Showing 1-6 of 248 test cases</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 3: TEST CASE DETAIL -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-detail">
+          <div class="view-header">
+            <div>
+              <div class="back-link" onclick="navigateToScreen('library')">← Back to Test Library</div>
+              <h1 class="view-title" id="detail-test-title">TC-104: Secure Checkout with Promo Code & 3D Secure</h1>
+              <p class="view-subtitle">Playwright TypeScript test verifying end-to-end checkout flow with credit card validation.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" onclick="navigateToScreen('authoring')">✏️ Edit in AI Studio</button>
+              <button class="btn btn-primary" onclick="runSingleTestFromDetail()">▶ Run in Sandbox</button>
+            </div>
+          </div>
+
+          <!-- Traceability Chain Banner (Decision #2: Test Case is the Centre) -->
+          <div class="traceability-banner">
+            <div class="trace-step">
+              <span class="trace-label">KYXO REQUIREMENT</span>
+              <span class="trace-value"><span class="badge badge-accent">REQ-890</span> Checkout Voucher Discount & 3DS</span>
+            </div>
+            <div class="trace-arrow">→</div>
+            <div class="trace-step active">
+              <span class="trace-label">TEST CASE (CENTRE)</span>
+              <span class="trace-value"><strong>TC-104</strong> (Smoke + Regression)</span>
+            </div>
+            <div class="trace-arrow">→</div>
+            <div class="trace-step">
+              <span class="trace-label">AUTOMATION SCRIPT</span>
+              <span class="trace-value"><span class="code-pill">tests/e2e/checkout-promo.spec.ts</span></span>
+            </div>
+            <div class="trace-arrow">→</div>
+            <div class="trace-step">
+              <span class="trace-label">GIT REPO COMMIT</span>
+              <span class="trace-value"><span class="code-pill">main @ e8f4a12</span></span>
+            </div>
+          </div>
+
+          <!-- Two-Column Detail Grid -->
+          <div class="detail-grid">
+            <!-- Left: Manual Specification vs Automated Script Code -->
+            <div class="detail-left">
+              <div class="tab-pill-bar">
+                <button class="tab-pill active" onclick="switchDetailTab('script')">Playwright Code (Git)</button>
+                <button class="tab-pill" onclick="switchDetailTab('steps')">Manual Steps & Expectations</button>
+                <button class="tab-pill" onclick="switchDetailTab('params')">Data & Secrets Injected</button>
+              </div>
+
+              <!-- Tab Content: Script -->
+              <div class="tab-panel active" id="detail-tab-script">
+                <div class="code-editor-mock">
+                  <div class="editor-header">
+                    <span class="editor-filename">tests/e2e/checkout-promo.spec.ts (TypeScript)</span>
+                    <span class="badge badge-sm badge-outline">Synced with Git main</span>
+                  </div>
+                  <pre class="code-block"><code id="code-snippet-tc104"><span class="code-keyword">import</span> { test, expect } <span class="code-keyword">from</span> <span class="code-string">'@playwright/test'</span>;
+
+test.<span class="code-func">describe</span>(<span class="code-string">'Checkout Workflow'</span>, () => {
+  test(<span class="code-string">'TC-104: Apply 20% discount coupon and submit checkout'</span>, <span class="code-keyword">async</span> ({ page }) => {
+    <span class="code-comment">// 1. Navigate to product catalog</span>
+    <span class="code-keyword">await</span> page.<span class="code-func">goto</span>(process.env.APP_BASE_URL + <span class="code-string">'/shop'</span>);
+    <span class="code-keyword">await</span> page.<span class="code-func">getByRole</span>(<span class="code-string">'button'</span>, { name: <span class="code-string">'Add to Cart'</span> }).first().<span class="code-func">click</span>();
+
+    <span class="code-comment">// 2. Open cart and apply promo</span>
+    <span class="code-keyword">await</span> page.<span class="code-func">getByTestId</span>(<span class="code-string">'cart-drawer-toggle'</span>).<span class="code-func">click</span>();
+    <span class="code-keyword">await</span> page.<span class="code-func">getByPlaceholder</span>(<span class="code-string">'Enter Promo Code'</span>).<span class="code-func">fill</span>(<span class="code-string">'AUTUMN20'</span>);
+    <span class="code-keyword">await</span> page.<span class="code-func">getByRole</span>(<span class="code-string">'button'</span>, { name: <span class="code-string">'Apply'</span> }).<span class="code-func">click</span>();
+
+    <span class="code-comment">// 3. Verify discount calculated correctly</span>
+    <span class="code-keyword">await</span> expect(page.<span class="code-func">getByTestId</span>(<span class="code-string">'discount-badge'</span>)).<span class="code-func">toContainText</span>(<span class="code-string">'-20%'</span>);
+
+    <span class="code-comment">// 4. Proceed to mock payment</span>
+    <span class="code-keyword">await</span> page.<span class="code-func">getByRole</span>(<span class="code-string">'button'</span>, { name: <span class="code-string">'Proceed to Checkout'</span> }).<span class="code-func">click</span>();
+    <span class="code-keyword">await</span> expect(page).<span class="code-func">toHaveURL</span>(<span class="code-regex">/\/checkout\/payment/</span>);
+  });
+});</code></pre>
+                </div>
+              </div>
+
+              <!-- Tab Content: Manual Steps -->
+              <div class="tab-panel" id="detail-tab-steps" style="display: none;">
+                <div class="steps-list">
+                  <div class="step-card">
+                    <div class="step-num">Step 1</div>
+                    <div class="step-content">
+                      <strong>Navigation:</strong> User loads target web storefront with active session token.
+                      <div class="step-expected">✓ Expected: Catalog renders with visible price tags.</div>
+                    </div>
+                  </div>
+                  <div class="step-card">
+                    <div class="step-num">Step 2</div>
+                    <div class="step-content">
+                      <strong>Add Item & Apply Promo:</strong> Add SKU-9901 to cart. In drawer, enter code 'AUTUMN20'.
+                      <div class="step-expected">✓ Expected: Subtotal updates, 20% discount badge appears.</div>
+                    </div>
+                  </div>
+                  <div class="step-card">
+                    <div class="step-num">Step 3</div>
+                    <div class="step-content">
+                      <strong>Checkout Redirect:</strong> Click 'Proceed to Checkout'.
+                      <div class="step-expected">✓ Expected: Redirects to secure /checkout/payment path.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab Content: Parameters -->
+              <div class="tab-panel" id="detail-tab-params" style="display: none;">
+                <div class="params-box">
+                  <div class="param-row">
+                    <span class="param-key">Target Env URL:</span>
+                    <span class="code-pill">$APP_BASE_URL (Injected from Environment)</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-key">Test Promo Voucher:</span>
+                    <span class="code-pill">AUTUMN20 (Valid Active Mock Code)</span>
+                  </div>
+                  <div class="param-row">
+                    <span class="param-key">Secrets Reference:</span>
+                    <span class="badge badge-accent">Azure KeyVault: QA-Voucher-Secret</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Execution History & Artifacts for this test -->
+            <div class="detail-right">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3 class="panel-title">Run History (Last 10 Runs)</h3>
+                  <span class="badge badge-sm badge-success">98% Pass Rate</span>
+                </div>
+                <div class="history-list">
+                  <div class="history-item">
+                    <div class="history-status passed">✓</div>
+                    <div class="history-info">
+                      <div class="history-run">Run #1042 · Staging-EastUS</div>
+                      <div class="history-meta">Duration: 1.8s · Shard 2 (Pod-sbx-02)</div>
+                    </div>
+                    <button class="btn btn-xs btn-outline">Trace</button>
+                  </div>
+                  <div class="history-item">
+                    <div class="history-status passed">✓</div>
+                    <div class="history-info">
+                      <div class="history-run">Run #1039 · GitHub Actions #408</div>
+                      <div class="history-meta">Duration: 2.1s · Shard 1 (Pod-sbx-01)</div>
+                    </div>
+                    <button class="btn btn-xs btn-outline">Trace</button>
+                  </div>
+                  <div class="history-item">
+                    <div class="history-status passed">✓</div>
+                    <div class="history-info">
+                      <div class="history-run">Run #1035 · Nightly Cron</div>
+                      <div class="history-meta">Duration: 1.9s · Shard 3 (Pod-sbx-03)</div>
+                    </div>
+                    <button class="btn btn-xs btn-outline">Trace</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Artifact Quick Look -->
+              <div class="panel mt-4">
+                <div class="panel-header">
+                  <h3 class="panel-title">Latest Artifacts</h3>
+                  <span class="badge badge-subtle">Stored in Blob</span>
+                </div>
+                <div class="artifact-pills">
+                  <span class="artifact-tag">📹 Video Recording (.webm)</span>
+                  <span class="artifact-tag">🔬 Playwright Trace (.zip)</span>
+                  <span class="artifact-tag">📸 Full-page Screenshot (.png)</span>
+                  <span class="artifact-tag">📑 Network HAR log</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 4: AI AUTHORING STUDIO (CHAT-FIRST + DEVTOOLS SPLIT) -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-authoring">
+          <div class="view-header">
+            <div>
+              <div class="flex-align-center gap-2">
+                <h1 class="view-title">AI Authoring Studio</h1>
+                <span class="badge badge-sparkle">DevTools Natural Language Agent</span>
+              </div>
+              <p class="view-subtitle">Generate, record, or self-heal Playwright tests through conversational chat, then commit clean code directly to Git.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" id="btn-import-recorded-dom">📹 Inspect Web Page</button>
+              <button class="btn btn-primary" id="btn-commit-studio-code">💾 Commit Script to Git</button>
+            </div>
+          </div>
+
+          <!-- Split Workspace Layout: Left Chat, Right Code & Live Sandbox Preview -->
+          <!-- In-Studio Test Metadata Configuration Ribbon -->
+          <div class="authoring-metadata-ribbon mb-3">
+            <div class="ribbon-item">
+              <span class="ribbon-label">1. LINKED REQUIREMENT (KYXO):</span>
+              <div class="flex-align-center gap-1">
+                <select class="select-control select-sm" id="studio-req-selector" onchange="onStudioMetadataChange()">
+                  <option value="REQ-890">[REQ-890] Checkout Voucher Discount & 3DS</option>
+                  <option value="REQ-885">[REQ-885] SSO & OAuth2 Authentication</option>
+                  <option value="REQ-892">[REQ-892] Tiered Pricing & Currency Engine</option>
+                  <option value="REQ-895">[REQ-895] ERP Invoice & Webhook Synchronization</option>
+                </select>
+                <button type="button" class="btn btn-xs btn-outline" onclick="openNewRequirementModal()" title="Create new requirement">+ New Req</button>
+              </div>
+            </div>
+
+            <div class="ribbon-item">
+              <span class="ribbon-label">2. SUITE / TYPE TAGS:</span>
+              <div class="checkbox-tag-group-sm" id="studio-tag-pills">
+                <label class="tag-checkbox-pill-sm"><input type="checkbox" checked id="tag-smoke" onchange="onStudioMetadataChange()" /> @smoke</label>
+                <label class="tag-checkbox-pill-sm"><input type="checkbox" checked id="tag-regression" onchange="onStudioMetadataChange()" /> @regression</label>
+                <label class="tag-checkbox-pill-sm"><input type="checkbox" checked id="tag-e2e" onchange="onStudioMetadataChange()" /> @e2e</label>
+              </div>
+            </div>
+
+            <div class="ribbon-item">
+              <span class="ribbon-label">3. AUTOMATION ENGINE:</span>
+              <select class="select-control select-sm" id="studio-engine-selector" onchange="onStudioMetadataChange()">
+                <option value="playwright">Playwright v1.48 (Default)</option>
+                <option value="cypress">Cypress 13.x</option>
+                <option value="selenium">Selenium 4.x (Grid)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="authoring-split-layout">
+            <!-- Left: DevTools Chat Panel -->
+            <div class="chat-studio-pane">
+              <div class="chat-header">
+                <div class="chat-header-title">
+                  <span class="chat-spark-icon">✨</span>
+                  <strong>Automation Copilot</strong>
+                </div>
+                <span class="badge badge-subtle">Context: Staging Auth Flow</span>
+              </div>
+
+              <div class="chat-messages-container" id="chat-messages-container">
+                <div class="chat-bubble ai">
+                  <div class="bubble-avatar">🤖</div>
+                  <div class="bubble-content">
+                    <p id="chat-welcome-text">Hello Souvik! I can generate new Playwright tests from requirements, record user interactions, or optimize existing selectors.</p>
+                    <p class="mt-2 text-sm text-secondary">Try asking:</p>
+                    <div class="quick-prompts" id="quick-prompts-container">
+                      <button class="quick-chip" onclick="sendSamplePrompt('password')">"Write password reset test"</button>
+                      <button class="quick-chip" onclick="sendSamplePrompt('module')">"📦 Test Checkout & Payments module"</button>
+                      <button class="quick-chip" onclick="sendSamplePrompt('apple-pay')">"✨ Create requirement for Apple Pay"</button>
+                      <button class="quick-chip" onclick="sendSamplePrompt('coupon')">"Generate coupon boundary cases"</button>
+                      <button class="quick-chip" onclick="sendSamplePrompt('checkout')">"Create end-to-end checkout flow"</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                  <textarea id="chat-user-input" placeholder="Describe the test you want to build or paste a Kyxo requirement..." rows="2"></textarea>
+                  <button class="btn btn-primary btn-send" id="btn-send-chat" title="Send message">
+                    <span>Send</span>
+                  </button>
+                </div>
+                <div class="chat-input-hint" id="chat-input-hint">AI writes real code once. Tests run as native Playwright code without token costs.</div>
+              </div>
+            </div>
+
+            <!-- Right: Code Editor & Live Playwright Sandbox Runner -->
+            <div class="code-studio-pane">
+              <div class="studio-top-controls">
+                <div class="file-tab active">
+                  <span>tests/e2e/auth-reset-password.spec.ts</span>
+                  <span class="file-status-indicator unsaved">● Unsaved</span>
+                </div>
+                <div class="studio-actions">
+                  <button class="btn btn-xs btn-outline" id="btn-format-code">Format Code</button>
+                  <button class="btn btn-xs btn-accent" id="btn-run-studio-test">▶ Run in Azure Sandbox</button>
+                </div>
+              </div>
+
+              <!-- Main Code Canvas -->
+              <div class="code-editor-body">
+                <textarea class="raw-code-editor" id="studio-code-editor" spellcheck="false">import { test, expect } from '@playwright/test';
+
+test.describe('Password Reset Workflow (KYX-109)', () => {
+  test('User can request reset link and verify confirmation toast', async ({ page }) => {
+    // 1. Visit authentication portal
+    await page.goto(process.env.APP_BASE_URL + '/forgot-password');
+
+    // 2. Fill registered email address
+    const emailInput = page.getByLabel('Registered Work Email');
+    await emailInput.fill('qa-tester@company.internal');
+
+    // 3. Submit reset request
+    await page.getByRole('button', { name: 'Send Reset Link' }).click();
+
+    // 4. Validate success response banner
+    const alertBanner = page.getByRole('alert');
+    await expect(alertBanner).toBeVisible();
+    await expect(alertBanner).toContainText('Reset link sent to your inbox');
+  });
+});</textarea>
+              </div>
+
+              <!-- Live Execution Console Preview -->
+              <div class="studio-console-drawer" id="studio-console-drawer">
+                <div class="console-header">
+                  <span>Sandbox Pod Console: <strong id="studio-pod-name">azure-aks-sbx-runner-04</strong></span>
+                  <span class="badge badge-sm badge-success" id="studio-exec-badge">Ready</span>
+                </div>
+                <pre class="console-output" id="studio-console-output">> Ready for execution. Press "Run in Azure Sandbox" to spin up ephemeral Kata container.</pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 5: RUN BUILDER & ORCHESTRATOR -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-run-builder">
+          <div class="view-header">
+            <div>
+              <h1 class="view-title">Run Builder & Orchestrator</h1>
+              <p class="view-subtitle">Configure elastic on-demand execution across Azure Sandboxes (Kata Containers on AKS).</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" onclick="loadRunTemplate('smoke')">⚡ Load Smoke Preset</button>
+              <button class="btn btn-secondary" onclick="loadRunTemplate('module-payments')">🛒 Load Payments Epic (42 tests)</button>
+              <button class="btn btn-secondary" onclick="loadRunTemplate('full')">📦 Load Full Regression</button>
+            </div>
+          </div>
+
+          <div class="run-builder-grid">
+            <!-- Left: Run Configuration Form -->
+            <div class="panel">
+              <h3 class="panel-title mb-3">1. Scope & Test Selection</h3>
+              
+              <!-- Scope Mode Selector: By Tags vs By Module/Epic -->
+              <div class="scope-mode-toggle mb-3">
+                <span class="text-xs font-semibold text-secondary">SELECTION SCOPE:</span>
+                <div class="scope-mode-pills">
+                  <button type="button" class="scope-mode-btn" id="btn-scope-tags" onclick="setRunScopeMode('tags')">🏷️ By Suite Tags</button>
+                  <button type="button" class="scope-mode-btn active" id="btn-scope-module" onclick="setRunScopeMode('module')">📦 By Feature / Module / Epic</button>
+                </div>
+              </div>
+
+              <!-- Mode A: By Suite Tags -->
+              <div class="form-group" id="scope-tags-section" style="display: none;">
+                <label class="form-label">Test Suite or Tags</label>
+                <div class="checkbox-tag-group" id="builder-tag-group">
+                  <label class="tag-checkbox-pill"><input type="checkbox" id="scope-tag-smoke" checked value="24" onchange="onScopeTagsChange()" /> @smoke (24 tests)</label>
+                  <label class="tag-checkbox-pill"><input type="checkbox" id="scope-tag-e2e" checked value="18" onchange="onScopeTagsChange()" /> @e2e-checkout (18 tests)</label>
+                  <label class="tag-checkbox-pill"><input type="checkbox" id="scope-tag-regression" value="184" onchange="onScopeTagsChange()" /> @regression (184 tests)</label>
+                  <label class="tag-checkbox-pill"><input type="checkbox" id="scope-tag-auth" value="32" onchange="onScopeTagsChange()" /> @auth (32 tests)</label>
+                </div>
+              </div>
+
+              <!-- Mode B: By Feature / Module / Epic (Active by default) -->
+              <div class="form-group" id="scope-module-section">
+                <div class="flex-align-center justify-between">
+                  <label class="form-label" style="margin-bottom: 0;">Target Feature / Module / Epic</label>
+                  <span class="badge badge-sparkle">Auto-resolves all underlying Requirements</span>
+                </div>
+                
+                <div class="module-grid-picker" id="module-grid-picker">
+                  <!-- Dynamically populated from state.modules -->
+                </div>
+
+                <!-- Dynamic Underlying Requirements Preview -->
+                <div class="module-reqs-preview-box" id="module-reqs-preview-box">
+                  <div class="module-reqs-header">
+                    <span id="module-reqs-header-title">Underlying Requirements Covered</span>
+                    <span class="badge badge-subtle" id="module-reqs-count-badge">3 Requirements</span>
+                  </div>
+                  <div class="module-reqs-chips" id="module-reqs-chips">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+
+                <!-- CLI & CI/CD Command Ingress Preview -->
+                <div class="cli-preview-box">
+                  <span class="text-muted">CLI / CI Ingress:</span>
+                  <code class="cli-code" id="module-cli-code">autoq run --module "Checkout & Payments" --shards 4 --env staging</code>
+                </div>
+              </div>
+
+              <div class="form-group mt-4">
+                <label class="form-label">Automation Engine Adapter</label>
+                <select class="select-control" id="builder-engine-select" onchange="setGlobalEngine(this.value)" style="width: 100%;">
+                  <option value="playwright" selected>Playwright v1.48 (Default - Multi-tab & Tracing)</option>
+                  <option value="cypress">Cypress 13.x (In-browser runner)</option>
+                  <option value="selenium">Selenium 4.x (Grid compatibility)</option>
+                </select>
+              </div>
+
+              <div class="form-group mt-4">
+                <label class="form-label">Target Execution Environment</label>
+                <select class="select-control" id="builder-target-env" onchange="setGlobalEnvironment(this.value)">
+                  <option value="staging">Staging (https://staging.internal.app - East US)</option>
+                  <option value="dev">Dev Preview (https://dev-04.internal.app)</option>
+                  <option value="prod">Production Canary (https://app.production.com - Read-only tests)</option>
+                </select>
+                <span class="field-hint">Azure KeyVault secrets will be automatically injected into sandboxes at runtime.</span>
+              </div>
+
+              <div class="form-group mt-4">
+                <label class="form-label">Browsers & Matrix</label>
+                <div class="checkbox-tag-group">
+                  <label class="tag-checkbox-pill"><input type="checkbox" checked /> Chromium (Desktop Chrome)</label>
+                  <label class="tag-checkbox-pill"><input type="checkbox" checked /> Firefox (Latest)</label>
+                  <label class="tag-checkbox-pill"><input type="checkbox" /> WebKit (Safari Engine)</label>
+                  <label class="tag-checkbox-pill"><input type="checkbox" /> Mobile Chrome (Pixel 7 Emulation)</label>
+                </div>
+              </div>
+
+              <h3 class="panel-title mt-5 mb-3">2. Elastic Sharding & Sandbox Topology</h3>
+              
+              <div class="form-group">
+                <label class="form-label">Azure Sandbox Worker Shards (Kata Containers)</label>
+                <div class="range-slider-wrapper">
+                  <input type="range" min="1" max="16" value="4" class="slider" id="shard-count-slider" oninput="setGlobalShardCount(this.value)" />
+                  <div class="slider-display"><strong id="shard-count-display">4 Shards</strong> (Parallel Pods)</div>
+                </div>
+                <div class="shard-stat-calc" id="shard-stat-calc">
+                  Estimated execution time: <strong>~1m 40s</strong> (reduced from 6m 40s serial)
+                </div>
+              </div>
+
+              <div class="form-group mt-4">
+                <label class="form-label">Trigger Source</label>
+                <div class="trigger-type-picker">
+                  <label class="radio-card active">
+                    <input type="radio" name="triggerType" checked />
+                    <span class="radio-title">🚀 Immediate UI Run</span>
+                    <span class="radio-desc">Trigger now and view live progress</span>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="triggerType" />
+                    <span class="radio-title">⏰ Scheduled Run</span>
+                    <span class="radio-desc">Cron: Every night at 02:00 UTC</span>
+                  </label>
+                  <label class="radio-card">
+                    <input type="radio" name="triggerType" />
+                    <span class="radio-title">🔗 GitHub Actions CI</span>
+                    <span class="radio-desc">Webhook on PR to main</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Live Cost, Shard Map & Launch Action -->
+            <div class="panel">
+              <h3 class="panel-title mb-3">Execution Plan Summary</h3>
+              
+              <div class="execution-summary-card">
+                <div class="summary-stat-row">
+                  <span class="summary-stat-label">Total Tests Selected:</span>
+                  <span class="summary-stat-val"><strong id="summary-tests-count">42 Tests</strong></span>
+                </div>
+                <div class="summary-stat-row">
+                  <span class="summary-stat-label">Automation Engine:</span>
+                  <span class="summary-stat-val" id="summary-engine-val">Playwright v1.48 (Adapter)</span>
+                </div>
+                <div class="summary-stat-row">
+                  <span class="summary-stat-label">Azure Cluster:</span>
+                  <span class="summary-stat-val">AKS Kata Sandboxes</span>
+                </div>
+                <div class="summary-stat-row">
+                  <span class="summary-stat-label">Warm Pod Allocation:</span>
+                  <span class="summary-stat-val text-success">Instant start (&lt; 2.5s)</span>
+                </div>
+                <div class="summary-stat-row">
+                  <span class="summary-stat-label">Artifact Storage:</span>
+                  <span class="summary-stat-val">Azure Blob (Retention 30d)</span>
+                </div>
+              </div>
+
+              <!-- Visual Shard Map -->
+              <h4 class="text-sm font-semibold mt-4 mb-2">Simulated Shard Distribution:</h4>
+              <div class="shard-cards-container" id="shard-cards-container">
+                <div class="shard-box">
+                  <div class="shard-box-head">Shard 1 (Pod-01)</div>
+                  <div class="shard-box-body">Tests 1–11 (Auth & Setup)</div>
+                </div>
+                <div class="shard-box">
+                  <div class="shard-box-head">Shard 2 (Pod-02)</div>
+                  <div class="shard-box-body">Tests 12–22 (Checkout Flow)</div>
+                </div>
+                <div class="shard-box">
+                  <div class="shard-box-head">Shard 3 (Pod-03)</div>
+                  <div class="shard-box-body">Tests 23–32 (Promo & Coupons)</div>
+                </div>
+                <div class="shard-box">
+                  <div class="shard-box-head">Shard 4 (Pod-04)</div>
+                  <div class="shard-box-body">Tests 33–42 (Post-Order Verify)</div>
+                </div>
+              </div>
+
+              <!-- Launch Button -->
+              <div class="mt-5">
+                <button class="btn btn-primary btn-lg btn-block" id="btn-launch-orchestrated-run" onclick="launchLiveExecution()">
+                  <span class="btn-icon">⚡</span>
+                  <span>Provision Sandboxes & Execute Run</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 6: LIVE EXECUTION & SANDBOX RESULTS -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-results">
+          <div class="view-header">
+            <div>
+              <div class="flex-align-center gap-2">
+                <h1 class="view-title">Execution & Sandbox Cluster</h1>
+                <span class="status-pill status-running" id="live-run-status-badge">Running · 4 Shards</span>
+              </div>
+              <p class="view-subtitle" id="live-run-subtitle">Run #1042 · Staging-EastUS · Orchestrated via Azure Sandboxes</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-danger btn-sm" id="btn-cancel-run" onclick="cancelLiveRun()">⏹ Stop Run</button>
+              <button class="btn btn-secondary btn-sm" onclick="navigateToScreen('triage')">🔍 AI Triage View</button>
+            </div>
+          </div>
+
+          <!-- Overall Run Progress Bar -->
+          <div class="panel mb-4">
+            <div class="overall-progress-header">
+              <div class="progress-label">
+                <span>Progress: <strong id="progress-percentage-text">64%</strong></span>
+                <span class="text-secondary">(27 of 42 tests completed)</span>
+              </div>
+              <div class="progress-stats">
+                <span class="text-success font-semibold" id="count-passed">26 Passed</span> ·
+                <span class="text-danger font-semibold" id="count-failed">1 Failed</span> ·
+                <span class="text-muted" id="count-pending">15 In Progress</span>
+              </div>
+            </div>
+            <div class="main-progress-track">
+              <div class="progress-segment pass" id="prog-seg-pass" style="width: 61%;"></div>
+              <div class="progress-segment fail" id="prog-seg-fail" style="width: 3%;"></div>
+              <div class="progress-segment running" id="prog-seg-run" style="width: 36%;"></div>
+            </div>
+          </div>
+
+          <!-- Sandbox Pod Grid (Real-time Shard Visualizer) -->
+          <div class="pod-shards-grid" id="pod-shards-grid">
+            <!-- Shard 1 -->
+            <div class="pod-card">
+              <div class="pod-header">
+                <div class="pod-title">
+                  <span class="status-dot online"></span>
+                  <strong>Shard 1</strong> · Pod-sbx-alpha
+                </div>
+                <span class="badge badge-success">Completed</span>
+              </div>
+              <div class="pod-details">
+                <div>Tests: <strong>11/11</strong></div>
+                <div>Runtime: <strong>48s</strong></div>
+              </div>
+              <div class="pod-test-stream">
+                <div class="stream-line text-success">✓ TC-101: Login with valid credentials (1.2s)</div>
+                <div class="stream-line text-success">✓ TC-102: Password masked validation (0.8s)</div>
+                <div class="stream-line text-success">✓ TC-103: Session token cookie set (0.9s)</div>
+              </div>
+            </div>
+
+            <!-- Shard 2 -->
+            <div class="pod-card active-pod">
+              <div class="pod-header">
+                <div class="pod-title">
+                  <span class="status-dot running-pulse"></span>
+                  <strong>Shard 2</strong> · Pod-sbx-beta
+                </div>
+                <span class="badge badge-warning">1 Failure</span>
+              </div>
+              <div class="pod-details">
+                <div>Tests: <strong>9/11</strong></div>
+                <div>Runtime: <strong>1m 12s</strong></div>
+              </div>
+              <div class="pod-test-stream">
+                <div class="stream-line text-success">✓ TC-104: Add item to cart (1.4s)</div>
+                <div class="stream-line text-danger clickable-stream" onclick="navigateToScreen('triage')">✗ TC-105: Checkout button click timeout [Inspect]</div>
+                <div class="stream-line text-accent">▶ TC-106: Running payment validation...</div>
+              </div>
+            </div>
+
+            <!-- Shard 3 -->
+            <div class="pod-card active-pod">
+              <div class="pod-header">
+                <div class="pod-title">
+                  <span class="status-dot running-pulse"></span>
+                  <strong>Shard 3</strong> · Pod-sbx-gamma
+                </div>
+                <span class="badge badge-accent">Running</span>
+              </div>
+              <div class="pod-details">
+                <div>Tests: <strong>4/10</strong></div>
+                <div>Runtime: <strong>38s</strong></div>
+              </div>
+              <div class="pod-test-stream">
+                <div class="stream-line text-success">✓ TC-110: Apply promo AUTUMN20 (1.1s)</div>
+                <div class="stream-line text-accent">▶ TC-111: Validating discount formula...</div>
+              </div>
+            </div>
+
+            <!-- Shard 4 -->
+            <div class="pod-card active-pod">
+              <div class="pod-header">
+                <div class="pod-title">
+                  <span class="status-dot running-pulse"></span>
+                  <strong>Shard 4</strong> · Pod-sbx-delta
+                </div>
+                <span class="badge badge-accent">Running</span>
+              </div>
+              <div class="pod-details">
+                <div>Tests: <strong>3/10</strong></div>
+                <div>Runtime: <strong>32s</strong></div>
+              </div>
+              <div class="pod-test-stream">
+                <div class="stream-line text-success">✓ TC-120: Order receipt PDF download (2.4s)</div>
+                <div class="stream-line text-accent">▶ TC-121: Webhook confirmation payload...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Live Stream Log Console -->
+          <div class="panel mt-4">
+            <div class="panel-header">
+              <h3 class="panel-title">Unified Execution Log Stream</h3>
+              <div class="flex-align-center gap-2">
+                <label class="text-xs text-secondary"><input type="checkbox" checked id="auto-scroll-chk" /> Auto-scroll</label>
+                <button class="btn btn-xs btn-outline" onclick="clearLiveLogs()">Clear</button>
+              </div>
+            </div>
+            <pre class="live-log-box" id="live-unified-logs">[11:15:02.102] [Orchestrator] Provisioned 4 Kata Sandboxes on AKS cluster.
+[11:15:03.450] [Shard-1] Git clone shallow @ main (e8f4a12) completed in 420ms.
+[11:15:04.110] [Shard-2] Injected environment secrets from Azure KeyVault (QA-Staging).
+[11:15:05.200] [Shard-1] Playwright worker launched with Chromium headless.
+[11:15:08.312] [Shard-2] Running TC-105: Checkout button validation...
+[11:15:13.315] [Shard-2] [WARN] Locator page.getByTestId('checkout-btn') timed out after 5000ms.
+[11:15:13.400] [Shard-2] Captured Playwright trace, screenshot and DOM snapshot to Azure Blob.
+[11:15:13.410] [AI-Triage] Triage pipeline initiated for failure TC-105. Analyzing DOM diff...</pre>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 7: AI FAILURE TRIAGE & SELF-HEALING -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-triage">
+          <div class="view-header">
+            <div>
+              <div class="flex-align-center gap-2">
+                <h1 class="view-title">AI Failure Triage & Self-Healing</h1>
+                <span class="badge badge-warning">Decision #6: Human-in-the-Loop Review</span>
+              </div>
+              <p class="view-subtitle">AI triages root causes, writes verified Playwright patch diffs, and waits for developer approval before updating the Git repo.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-secondary" onclick="navigateToScreen('results')">← Back to Run</button>
+              <button class="btn btn-primary" id="btn-approve-pr" onclick="approveAndCommitPatch()">✓ Approve & Push Git PR</button>
+            </div>
+          </div>
+
+          <!-- Failure Item Selector -->
+          <div class="failure-selector-bar">
+            <div class="fail-pill active" onclick="selectFailureItem(1)">
+              <span class="badge-dot dot-amber"></span>
+              <span><strong>TC-105:</strong> Checkout Flow Timeout</span>
+              <span class="badge badge-sm badge-outline">Outdated Test (DOM Change)</span>
+            </div>
+            <div class="fail-pill" onclick="selectFailureItem(2)">
+              <span class="badge-dot dot-red"></span>
+              <span><strong>TC-202:</strong> Tax Calculation 500 Error</span>
+              <span class="badge badge-sm badge-danger">Real Product Bug</span>
+            </div>
+          </div>
+
+          <!-- Main Triage Split View -->
+          <div class="triage-grid">
+            <!-- Left: Triage Analysis, Playwright Trace & Root Cause -->
+            <div class="triage-left">
+              <div class="panel">
+                <div class="panel-header">
+                  <div class="flex-align-center gap-2">
+                    <span class="status-pill status-fail">FAILED IN RUN #1042</span>
+                    <span class="text-sm font-semibold">tests/e2e/checkout.spec.ts:34</span>
+                  </div>
+                  <span class="badge badge-sparkle">Auto-Classified in 1.4s</span>
+                </div>
+
+                <div class="failure-callout">
+                  <div class="callout-title">Classification: <strong>Outdated Test (Renamed DOM Element)</strong></div>
+                  <p class="text-sm text-secondary mt-1">
+                    The frontend team updated the checkout button locator in commit <span class="code-pill">web-ui@9bf21a</span>. 
+                    The old selector <code class="code-inline">data-testid="checkout-btn"</code> was migrated to a localized Accessible Button <code class="code-inline">getByRole('button', { name: 'Complete Purchase' })</code>.
+                  </p>
+                </div>
+
+                <!-- Trace Snapshot Viewer Mockup -->
+                <div class="trace-snapshot-box mt-4">
+                  <div class="trace-header">
+                    <span>Playwright Visual Trace Snapshot</span>
+                    <span class="badge badge-sm badge-subtle">Step: click()</span>
+                  </div>
+                  <div class="trace-browser-mock">
+                    <div class="browser-address-bar">https://staging.internal.app/cart</div>
+                    <div class="browser-viewport">
+                      <div class="mock-cart-ui">
+                        <div class="mock-item-row">
+                          <span>📦 Enterprise Testing License (1 Year)</span>
+                          <span>$1,200.00</span>
+                        </div>
+                        <div class="mock-btn-highlight">
+                          <button class="mock-real-btn">Complete Purchase</button>
+                          <div class="locator-target-arrow">
+                            <span class="arrow-pointer">↖</span>
+                            <span class="arrow-text">DOM element exists here! New name: "Complete Purchase"</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Stack Trace Snippet -->
+                <div class="mt-4">
+                  <span class="text-xs text-muted font-mono">Error Output:</span>
+                  <pre class="stack-trace-box">TimeoutError: locator.click: Timeout 5000ms exceeded.
+Call log:
+  - waiting for locator('[data-testid="checkout-btn"]')
+  - element not found in DOM tree</pre>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Proposed AI Self-Healing Code Patch & Human Approval -->
+            <div class="triage-right">
+              <div class="panel">
+                <div class="panel-header">
+                  <h3 class="panel-title">Proposed Git Code Patch (Diff)</h3>
+                  <span class="badge badge-accent">Human Sign-off Required</span>
+                </div>
+
+                <p class="text-sm text-secondary mb-3">
+                  AutoQ verified this patch by running a single sandbox replay. The patched test passed in <strong>1.1 seconds</strong>.
+                </p>
+
+                <!-- Unified Git Diff Viewer -->
+                <div class="diff-viewer">
+                  <div class="diff-header">
+                    <span>--- a/tests/e2e/checkout.spec.ts</span>
+                    <span>+++ b/tests/e2e/checkout.spec.ts</span>
+                  </div>
+                  <div class="diff-body">
+                    <div class="diff-line line-context">     // Proceed to order confirmation</div>
+                    <div class="diff-line line-context">     await page.getByPlaceholder('Promo').fill('SAVE10');</div>
+                    <div class="diff-line line-del">-    await page.locator('[data-testid="checkout-btn"]').click();</div>
+                    <div class="diff-line line-add">+    await page.getByRole('button', { name: 'Complete Purchase' }).click();</div>
+                    <div class="diff-line line-context">     await expect(page).toHaveURL(/.*checkout\/success/);</div>
+                  </div>
+                </div>
+
+                <!-- Approval Decision Form -->
+                <div class="approval-card mt-4">
+                  <div class="approval-title">Human Verification Checklist:</div>
+                  <label class="check-row">
+                    <input type="checkbox" checked id="chk-verify-logic" />
+                    <span>Verified that this is a benign locator change, not a masked bug</span>
+                  </label>
+                  <label class="check-row">
+                    <input type="checkbox" checked id="chk-verify-test" />
+                    <span>Verified against Kyxo Requirement REQ-890</span>
+                  </label>
+
+                  <div class="approval-buttons mt-4">
+                    <button class="btn btn-primary btn-block" id="btn-submit-heal" onclick="approveAndCommitPatch()">
+                      <span>✓ Approve & Auto-Merge to Git Branch</span>
+                    </button>
+                    <button class="btn btn-outline btn-block mt-2" onclick="rejectAndMarkBug()">
+                      <span>Reject & Escalate as Product Bug</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================================= -->
+        <!-- SCREEN 8: SYSTEM ARCHITECTURE SPEC (FOR LEADERSHIP & STAKEHOLDERS) -->
+        <!-- ========================================================================= -->
+        <section class="screen-view" id="screen-architecture">
+          <div class="view-header">
+            <div>
+              <div class="flex-align-center gap-2">
+                <h1 class="view-title">Test Automation Tool Architecture</h1>
+                <span class="badge badge-accent">Enterprise Architectural Blueprint</span>
+              </div>
+              <p class="view-subtitle">Detailed 4-Tier Topology, End-to-End Sequence Pipeline with Real-World Example, Hardware-Isolated Sandboxes, and 12 Justified Decisions.</p>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-primary" onclick="startFlowSimulation()">▶ Run Live Flow Simulation</button>
+              <button class="btn btn-outline" onclick="window.print()">🖨️ Print Blueprint</button>
+            </div>
+          </div>
+
+          <!-- Executive Capability-to-Architecture Mapping Ribbon -->
+          <div class="arch-capability-strip">
+            <div class="flex-align-center justify-between mb-2">
+              <div class="flex-align-center gap-2">
+                <span class="badge badge-accent">Platform Capabilities Mapped into Architecture</span>
+                <span class="text-xs text-secondary">All recent platform modules are architecturally represented below:</span>
+              </div>
+              <span class="text-xs text-muted font-mono">100% Traceable STLC</span>
+            </div>
+            <div class="capability-pill-grid">
+              <div class="cap-pill-card" onclick="switchArchTab('traceability'); selectArchScopeLevel('epic');">
+                <div class="cap-pill-icon">📦</div>
+                <div>
+                  <div class="cap-pill-title">Module / Epic Level Execution</div>
+                  <div class="cap-pill-sub">Decomposes to Reqs & Tests (KYX-EPIC-01)</div>
+                </div>
+                <span class="cap-pill-arrow">→</span>
+              </div>
+              <div class="cap-pill-card" onclick="switchArchTab('traceability');">
+                <div class="cap-pill-icon">🎯</div>
+                <div>
+                  <div class="cap-pill-title">Testcase ↔ Requirement Mapping</div>
+                  <div class="cap-pill-sub">The Test Case is the Centre (Kyxo STLC)</div>
+                </div>
+                <span class="cap-pill-arrow">→</span>
+              </div>
+              <div class="cap-pill-card" onclick="switchArchTab('blueprint'); inspectCompModal('playwright');">
+                <div class="cap-pill-icon">🔌</div>
+                <div>
+                  <div class="cap-pill-title">Pluggable Engine Adapters</div>
+                  <div class="cap-pill-sub">Playwright · Cypress · Selenium (Tier 3)</div>
+                </div>
+                <span class="cap-pill-arrow">→</span>
+              </div>
+              <div class="cap-pill-card" onclick="switchArchTab('security');">
+                <div class="cap-pill-icon">🎛️</div>
+                <div>
+                  <div class="cap-pill-title">Dynamic Shard & Env Passing</div>
+                  <div class="cap-pill-sub">Runtime KeyVault & Shard Bin-Packing</div>
+                </div>
+                <span class="cap-pill-arrow">→</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Architecture View Navigation Tabs -->
+          <div class="arch-nav-tabs">
+            <button class="arch-tab-btn active" id="tab-arch-flow" onclick="switchArchTab('flow')">
+              <span>🌐 End-to-End Execution Flow (Live Example)</span>
+              <span class="arch-tab-pill">Interactive</span>
+            </button>
+            <button class="arch-tab-btn" id="tab-arch-blueprint" onclick="switchArchTab('blueprint')">
+              <span>🏛️ 4-Tier Component Blueprint Diagram</span>
+              <span class="arch-tab-pill">System Nodes</span>
+            </button>
+            <button class="arch-tab-btn" id="tab-arch-traceability" onclick="switchArchTab('traceability')">
+              <span>🔄 Traceability Lifecycle: "Test Case is the Centre"</span>
+              <span class="arch-tab-pill">STLC</span>
+            </button>
+            <button class="arch-tab-btn" id="tab-arch-security" onclick="switchArchTab('security')">
+              <span>🛡️ Security & MicroVM Kata Containers</span>
+              <span class="arch-tab-pill">AKS Isolation</span>
+            </button>
+            <button class="arch-tab-btn" id="tab-arch-decisions" onclick="switchArchTab('decisions')">
+              <span>📋 12 Architectural Decisions Grid</span>
+              <span class="arch-tab-pill">12 Specs</span>
+            </button>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- VIEW 1: END-TO-END EXECUTION FLOW & STEP-BY-STEP REAL-WORLD PIPELINE -->
+          <!-- ================================================================= -->
+          <div class="arch-view-section active" id="view-arch-flow">
+            <div class="flow-pipeline-container">
+              <div class="flow-header-bar">
+                <div>
+                  <h3 class="panel-title">End-to-End Architecture Sequence Pipeline</h3>
+                  <p class="text-xs text-secondary mt-1">Trace exactly how a test execution request flows from code commit down to Azure Kata microVMs and AI triage:</p>
+                </div>
+                <div class="flow-example-picker">
+                  <span class="text-xs text-muted font-semibold">FLOW SCENARIO:</span>
+                  <button class="flow-example-btn active" id="btn-flow-pr" onclick="setFlowExample('pr')">🐙 GitHub Actions PR #408</button>
+                  <button class="flow-example-btn" id="btn-flow-chat" onclick="setFlowExample('chat')">💬 DevTools AI Chat Trigger</button>
+                  <button class="flow-example-btn" id="btn-flow-cron" onclick="setFlowExample('cron')">⏰ Nightly Regression Cron</button>
+                </div>
+              </div>
+
+              <!-- Active Scenario Callout Banner -->
+              <div class="req-creation-card mb-3" id="flow-scenario-banner">
+                <div class="flex-align-center justify-between">
+                  <div class="flex-align-center gap-2">
+                    <span class="badge badge-trigger-gh font-mono">GitHub Pull Request Event</span>
+                    <strong class="text-sm text-white" id="flow-scenario-title">Scenario: PR #408 on feature/checkout-promo -> Automated Smoke & Regression</strong>
+                  </div>
+                  <span class="badge badge-success font-mono" id="flow-scenario-time">Total Duration: 1m 38s (4 Shards)</span>
+                </div>
+                <div class="text-xs text-secondary mt-1" id="flow-scenario-desc">
+                  Developer pushes commit <span class="code-pill font-mono">e8f4a12</span> modifying checkout promo voucher handling. AutoQ intercepts the webhook, dynamically discovers 42 tests across 3 requirements in Module <strong>Checkout & Payments</strong>, and provisions 4 parallel Kata Sandboxes on AKS.
+                </div>
+              </div>
+
+              <!-- 7-Stage Interactive Stepper Diagram -->
+              <div class="flow-stepper-track" id="flow-stepper-track">
+                <!-- Node 1 -->
+                <div class="flow-step-node active" id="fnode-1" onclick="inspectFlowStep(1)">
+                  <div class="flow-step-num">1</div>
+                  <div class="flow-step-title">Ingress Trigger</div>
+                  <div class="flow-step-sub">Webhook / API</div>
+                  <div class="flow-step-timing">120ms</div>
+                  <span class="flow-arrow-indicator">→</span>
+                </div>
+
+                <!-- Node 2 -->
+                <div class="flow-step-node" id="fnode-2" onclick="inspectFlowStep(2)">
+                  <div class="flow-step-num">2</div>
+                  <div class="flow-step-title">Scope Resolution</div>
+                  <div class="flow-step-sub">Module & Reqs</div>
+                  <div class="flow-step-timing">85ms</div>
+                  <span class="flow-arrow-indicator">→</span>
+                </div>
+
+                <!-- Node 3 -->
+                <div class="flow-step-node" id="fnode-3" onclick="inspectFlowStep(3)">
+                  <div class="flow-step-num">3</div>
+                  <div class="flow-step-title">Elastic Sharding</div>
+                  <div class="flow-step-sub">4 Parallel Slices</div>
+                  <div class="flow-step-timing">40ms</div>
+                  <span class="flow-arrow-indicator">→</span>
+                </div>
+
+                <!-- Node 4 -->
+                <div class="flow-step-node" id="fnode-4" onclick="inspectFlowStep(4)">
+                  <div class="flow-step-num">4</div>
+                  <div class="flow-step-title">Kata Sandboxes</div>
+                  <div class="flow-step-sub">AKS Warm Pods</div>
+                  <div class="flow-step-timing">1.8s</div>
+                  <span class="flow-arrow-indicator">→</span>
+                </div>
+
+                <!-- Node 5 -->
+                <div class="flow-step-node" id="fnode-5" onclick="inspectFlowStep(5)">
+                  <div class="flow-step-num">5</div>
+                  <div class="flow-step-title">Secrets Injection</div>
+                  <div class="flow-step-sub">Azure KeyVault</div>
+                  <div class="flow-step-timing">310ms</div>
+                  <span class="flow-arrow-indicator">→</span>
+                </div>
+
+                <!-- Node 6 -->
+                <div class="flow-step-node" id="fnode-6" onclick="inspectFlowStep(6)">
+                  <div class="flow-step-num">6</div>
+                  <div class="flow-step-title">Engine Execution</div>
+                  <div class="flow-step-sub">Playwright TS</div>
+                  <div class="flow-step-timing">~1m 30s</div>
+                  <span class="flow-arrow-indicator">→</span>
+                </div>
+
+                <!-- Node 7 -->
+                <div class="flow-step-node" id="fnode-7" onclick="inspectFlowStep(7)">
+                  <div class="flow-step-num">7</div>
+                  <div class="flow-step-title">Blob & AI Triage</div>
+                  <div class="flow-step-sub">Traces & Diff</div>
+                  <div class="flow-step-timing">1.2s</div>
+                </div>
+              </div>
+
+              <!-- Live Simulation Control Bar -->
+              <div class="flow-sim-toolbar">
+                <div class="flex-align-center gap-2">
+                  <button class="btn btn-sm btn-primary" id="btn-toggle-flow-sim" onclick="toggleFlowSimulation()">
+                    <span id="flow-sim-icon">▶</span> <span id="flow-sim-label">Start Animated Simulation</span>
+                  </button>
+                  <button class="btn btn-sm btn-outline" onclick="resetFlowSimulation()">↺ Reset</button>
+                  <span class="flow-sim-status" id="flow-sim-status-text">Click any step above to inspect its architecture payload</span>
+                </div>
+                <div class="flex-align-center gap-2">
+                  <span class="text-xs text-muted">Simulated Cluster:</span>
+                  <span class="badge badge-accent">Azure AKS EastUS · kata-qemu</span>
+                </div>
+              </div>
+
+              <!-- Deep Inspector Panel for Selected Flow Step -->
+              <div class="flow-inspector-card" id="flow-inspector-card">
+                <div class="flow-inspector-head">
+                  <div class="flow-inspector-title">
+                    <span class="badge badge-accent font-mono" id="inspector-step-num">STEP 1 OF 7</span>
+                    <span id="inspector-step-title">Ingress Trigger: GitHub Actions Webhook Interception</span>
+                  </div>
+                  <div class="flex-align-center gap-2">
+                    <span class="text-xs text-muted">Latency SLA:</span>
+                    <span class="badge badge-success font-mono" id="inspector-latency">&lt; 150ms</span>
+                  </div>
+                </div>
+
+                <div class="flow-inspector-grid">
+                  <!-- Left: Plain English Explanation & Components -->
+                  <div class="flow-info-col">
+                    <p class="flow-info-p" id="inspector-desc">
+                      The application developer creates PR #408 on GitHub. A GitHub Actions workflow webhook emits an authenticated JSON payload with HMAC SHA-256 signature to the AutoQ Unified Orchestrator API endpoint.
+                    </p>
+
+                    <div>
+                      <span class="text-xs font-semibold text-secondary mb-1" style="display: block;">SYSTEM COMPONENTS INVOLVED:</span>
+                      <div class="flow-components-list" id="inspector-components">
+                        <span class="badge badge-subtle">GitHub Webhooks Gateway</span>
+                        <span class="badge badge-subtle">AutoQ Unified Ingress Controller</span>
+                        <span class="badge badge-subtle">HMAC-SHA256 Verifier</span>
+                        <span class="badge badge-subtle">Azure API Management (APIM)</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span class="text-xs font-semibold text-secondary mb-1" style="display: block;">ARCHITECTURAL GUARANTEE:</span>
+                      <div class="text-xs text-muted" id="inspector-guarantee">
+                        ⚡ <strong>Idempotency:</strong> Duplicate webhooks with the same commit SHA and delivery ID are deduplicated via Redis cache, guaranteeing zero duplicate sandbox boots.
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Right: Real Code / Ingress Payload -->
+                  <div>
+                    <div class="flex-align-center justify-between mb-1">
+                      <span class="text-xs font-semibold text-secondary">DATA PAYLOAD / SYSTEM SPEC:</span>
+                      <span class="text-xs text-muted font-mono" id="inspector-code-type">application/json</span>
+                    </div>
+                    <pre class="flow-code-col"><code id="inspector-code-snippet">{
+  "event": "pull_request.opened",
+  "repository": "company/web-storefront",
+  "pr_number": 408,
+  "commit_sha": "e8f4a12",
+  "branch": "feature/checkout-promo",
+  "target_env": "staging",
+  "author": "souvik.b@company.internal",
+  "autoq_trigger": {
+    "scope_mode": "module",
+    "target_module": "payments",
+    "requested_shards": 4
+  }
+}</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- VIEW 2: 4-TIER INTERACTIVE COMPONENT BLUEPRINT DIAGRAM -->
+          <!-- ================================================================= -->
+          <div class="arch-view-section" id="view-arch-blueprint">
+            <div class="blueprint-stage">
+              <!-- Tier 1 -->
+              <div class="blueprint-tier-card">
+                <div class="blueprint-tier-header">
+                  <div class="blueprint-tier-title">
+                    <span>🖥️</span>
+                    <span>TIER 1 · USER INTERACTION & UNIFIED INGRESS LAYER</span>
+                  </div>
+                  <span class="blueprint-tier-badge tier-badge-1">CLIENTS & INGRESS</span>
+                </div>
+                <div class="blueprint-components-grid">
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('studio')">
+                    <div class="comp-icon-title">
+                      <span>✨</span>
+                      <span class="comp-name">DevTools AI Studio</span>
+                    </div>
+                    <div class="comp-desc">Conversational chat authoring, natural language prompt compiler & selector inspection.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">WebSockets</span>
+                      <span class="comp-pill">LLM Prompting</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('screens')">
+                    <div class="comp-icon-title">
+                      <span>📊</span>
+                      <span class="comp-name">Structured QA Screens</span>
+                    </div>
+                    <div class="comp-desc">Test Library, Suite filters, Run Builder, Live Pod visualizer & AI Triage Diff Studio.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Single Page App</span>
+                      <span class="comp-pill">Live Telemetry</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('github')">
+                    <div class="comp-icon-title">
+                      <span>🐙</span>
+                      <span class="comp-name">CI/CD Webhooks Gateway</span>
+                    </div>
+                    <div class="comp-desc">Receives GitHub Actions PR events, commits, and tags with HMAC verification.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">REST POST</span>
+                      <span class="comp-pill">Idempotent</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('cron')">
+                    <div class="comp-icon-title">
+                      <span>⏰</span>
+                      <span class="comp-name">Cron Scheduler Ingress</span>
+                    </div>
+                    <div class="comp-desc">Schedules recurring nightly and hourly health checks without manual intervention.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Azure Event Grid</span>
+                      <span class="comp-pill">Cron Engine</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connector 1 -> 2 -->
+              <div class="blueprint-connector-bar">
+                <div class="connector-protocol-badge">
+                  <span>↓ HTTPS / REST (OpenAPI v3) & WebSockets / JSON Schema ↓</span>
+                </div>
+              </div>
+
+              <!-- Tier 2 -->
+              <div class="blueprint-tier-card">
+                <div class="blueprint-tier-header">
+                  <div class="blueprint-tier-title">
+                    <span>⚙️</span>
+                    <span>TIER 2 · CORE PLATFORM SERVICES & ORCHESTRATION</span>
+                  </div>
+                  <span class="blueprint-tier-badge tier-badge-2">CORE SERVICES</span>
+                </div>
+                <div class="blueprint-components-grid">
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('library-svc')">
+                    <div class="comp-icon-title">
+                      <span>📁</span>
+                      <span class="comp-name">Test Library & STLC Linker</span>
+                    </div>
+                    <div class="comp-desc">Maintains unbroken links: Epics → Kyxo Requirements → Test Cases → Git code paths.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">PostgreSQL</span>
+                      <span class="comp-pill">Kyxo Jira Sync</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('ai-svc')">
+                    <div class="comp-icon-title">
+                      <span>🤖</span>
+                      <span class="comp-name">AI Code Generator & Triager</span>
+                    </div>
+                    <div class="comp-desc">Generates deterministic code once; analyzes traces during failures to classify 4-way root causes.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Gemini/Claude</span>
+                      <span class="comp-pill">$0 Run Token</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('orch-svc')">
+                    <div class="comp-icon-title">
+                      <span>⚡</span>
+                      <span class="comp-name">Unified Elastic Orchestrator</span>
+                    </div>
+                    <div class="comp-desc">Dynamically calculates shards, schedules pods across AKS warm pools, balances workloads.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Redis Queue</span>
+                      <span class="comp-pill">K8s Client</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('results-svc')">
+                    <div class="comp-icon-title">
+                      <span>📈</span>
+                      <span class="comp-name">Results Normalizer & Lake</span>
+                    </div>
+                    <div class="comp-desc">Transforms diverse engine outputs into standard AutoQ JSON schema, flakiness indices, and alerts.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Normalized JSON</span>
+                      <span class="comp-pill">Flake Scorer</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connector 2 -> 3 -->
+              <div class="blueprint-connector-bar">
+                <div class="connector-protocol-badge">
+                  <span>↓ Standard Pluggable Adapter Contract (Input: Script+Config / Output: JSON+Traces) ↓</span>
+                </div>
+              </div>
+
+              <!-- Tier 3 -->
+              <div class="blueprint-tier-card">
+                <div class="blueprint-tier-header">
+                  <div class="blueprint-tier-title">
+                    <span>🔌</span>
+                    <span>TIER 3 · PLUGGABLE AUTOMATION ENGINE ADAPTERS</span>
+                  </div>
+                  <span class="blueprint-tier-badge tier-badge-3">ENGINE ADAPTERS</span>
+                </div>
+                <div class="blueprint-components-grid">
+                  <div class="blueprint-comp-box" style="border-color: rgba(16, 185, 129, 0.4); background: rgba(16, 185, 129, 0.08);" onclick="inspectCompModal('playwright')">
+                    <div class="comp-icon-title">
+                      <span>🎭</span>
+                      <span class="comp-name">Playwright Adapter (Default)</span>
+                    </div>
+                    <div class="comp-desc">TypeScript runner, Chrome DevTools Protocol (CDP), native multi-tab, network interception & trace zip.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">CDP Protocol</span>
+                      <span class="comp-pill">Node.js Headless</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('cypress')">
+                    <div class="comp-icon-title">
+                      <span>🌲</span>
+                      <span class="comp-name">Cypress Adapter</span>
+                    </div>
+                    <div class="comp-desc">In-browser runner for component & unit UI tests, webpack bundle injector.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Electron / Chrome</span>
+                      <span class="comp-pill">Mocha Wrapper</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('selenium')">
+                    <div class="comp-icon-title">
+                      <span>🌐</span>
+                      <span class="comp-name">Selenium Grid Adapter</span>
+                    </div>
+                    <div class="comp-desc">Legacy test support, W3C WebDriver JSON Wire Protocol bridge for Java/Python suites.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">W3C WebDriver</span>
+                      <span class="comp-pill">Port 9515</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('mobile')">
+                    <div class="comp-icon-title">
+                      <span>📱</span>
+                      <span class="comp-name">Appium Mobile Adapter (Future)</span>
+                    </div>
+                    <div class="comp-desc">Extensible adapter slot for iOS and Android native app testing in cloud emulators.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Appium 2.x</span>
+                      <span class="comp-pill">Ready to Plugin</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Connector 3 -> 4 -->
+              <div class="blueprint-connector-bar">
+                <div class="connector-protocol-badge">
+                  <span>↓ MicroVM Containerd Lifecycle API (gRPC) & Azure SDK (KeyVault / Blob Storage) ↓</span>
+                </div>
+              </div>
+
+              <!-- Tier 4 -->
+              <div class="blueprint-tier-card">
+                <div class="blueprint-tier-header">
+                  <div class="blueprint-tier-title">
+                    <span>☁️</span>
+                    <span>TIER 4 · ELASTIC CLOUD EXECUTION & ISOLATION LAYER</span>
+                  </div>
+                  <span class="blueprint-tier-badge tier-badge-4">AZURE INFRASTRUCTURE</span>
+                </div>
+                <div class="blueprint-components-grid">
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('aks')">
+                    <div class="comp-icon-title">
+                      <span>🛡️</span>
+                      <span class="comp-name">Azure AKS Kata Sandboxes</span>
+                    </div>
+                    <div class="comp-desc">Lightweight hardware-isolated QEMU/Cloud-Hypervisor microVM pods (1 per shard), destroyed after run.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">kata-containers</span>
+                      <span class="comp-pill">1-16 Pods</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('keyvault')">
+                    <div class="comp-icon-title">
+                      <span>🔑</span>
+                      <span class="comp-name">Azure KeyVault Secret Injection</span>
+                    </div>
+                    <div class="comp-desc">Runtime in-memory secret and credential injection. Zero secrets written to disk or Git repo.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Managed Identity</span>
+                      <span class="comp-pill">In-Memory Env</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('blob')">
+                    <div class="comp-icon-title">
+                      <span>🗄️</span>
+                      <span class="comp-name">Azure Blob Artifact Lake</span>
+                    </div>
+                    <div class="comp-desc">Unified storage for .webm recordings, trace.zip, screenshots, and HAR network logs (30d lifecycle).</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">SAS Tokens</span>
+                      <span class="comp-pill">Cold Tier Policy</span>
+                    </div>
+                  </div>
+
+                  <div class="blueprint-comp-box" onclick="inspectCompModal('git')">
+                    <div class="comp-icon-title">
+                      <span>🐙</span>
+                      <span class="comp-name">Application Git Repository</span>
+                    </div>
+                    <div class="comp-desc">Source of truth for version-controlled test code, peer PR reviews, and automated self-healing diff branches.</div>
+                    <div class="comp-meta-pills">
+                      <span class="comp-pill">Branch main</span>
+                      <span class="comp-pill">PR Healing Diffs</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- VIEW 3: TRACEABILITY LIFECYCLE (TEST CASE IS THE CENTRE) -->
+          <!-- ================================================================= -->
+          <div class="arch-view-section" id="view-arch-traceability">
+            <div class="traceability-lifecycle-card">
+              <div class="flex-align-center justify-between mb-2">
+                <h3 class="panel-title">Traceability Architecture: "The Test Case is the Centre"</h3>
+                <span class="badge badge-accent">Kyxo STLC Governance</span>
+              </div>
+              <p class="text-sm text-secondary">
+                In traditional setups, Playwright or Cypress tests are detached from business requirements. AutoQ establishes a permanent, bidirectional 5-stage traceability chain:
+              </p>
+
+              <!-- 5-Stage Traceability Flow Diagram -->
+              <div class="traceability-flow-diagram">
+                <!-- Node 1 -->
+                <div class="trace-flow-node">
+                  <div class="trace-node-badge">LEVEL 1 · BUSINESS EPIC</div>
+                  <div class="trace-node-title">Feature / Module Epic</div>
+                  <div class="trace-node-desc">High-level business capability. Groups multiple related requirements for milestone releases.</div>
+                  <div class="trace-node-meta">e.g. KYX-EPIC-01: Checkout & Payments</div>
+                </div>
+
+                <!-- Node 2 -->
+                <div class="trace-flow-node">
+                  <div class="trace-node-badge">LEVEL 2 · REQUIREMENT</div>
+                  <div class="trace-node-title">Kyxo Requirement</div>
+                  <div class="trace-node-desc">User story with Given/When/Then acceptance criteria. The unit of product functionality.</div>
+                  <div class="trace-node-meta">e.g. REQ-890: Voucher 20% & 3DS</div>
+                </div>
+
+                <!-- Node 3 -->
+                <div class="trace-flow-node highlight-centre">
+                  <div class="trace-node-badge" style="color: #a5b4fc;">LEVEL 3 · THE CENTRE ⭐</div>
+                  <div class="trace-node-title">AutoQ Test Case</div>
+                  <div class="trace-node-desc">Links upstream business requirement with downstream Git code. Tracks pass rate, history, and tags.</div>
+                  <div class="trace-node-meta" style="color: #fff;">e.g. TC-104 (Smoke + Regression)</div>
+                </div>
+
+                <!-- Node 4 -->
+                <div class="trace-flow-node">
+                  <div class="trace-node-badge">LEVEL 4 · GIT SCRIPT</div>
+                  <div class="trace-node-title">Automation Code</div>
+                  <div class="trace-node-desc">Deterministic TypeScript code in Git. Version-controlled, reviewable via PR, $0 run token cost.</div>
+                  <div class="trace-node-meta">tests/e2e/checkout-promo.spec.ts</div>
+                </div>
+
+                <!-- Node 5 -->
+                <div class="trace-flow-node">
+                  <div class="trace-node-badge">LEVEL 5 · EXECUTION & DEFECT</div>
+                  <div class="trace-node-title">Sandbox & Triage</div>
+                  <div class="trace-node-desc">Ephemeral AKS run output. On failure, automatically triaged as bug or PR patch linked to REQ-890.</div>
+                  <div class="trace-node-meta">PR #892 (Self-heal) or JIRA-4091</div>
+                </div>
+              </div>
+
+              <!-- Comparative Table -->
+              <div class="comparison-table-wrapper">
+                <div class="panel-header" style="border: none; padding: 0 0 10px 0;">
+                  <h4 class="text-sm font-semibold">Traditional Siloed QA vs AutoQ Traceability Architecture</h4>
+                </div>
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 20%;">Architectural Dimension</th>
+                      <th style="width: 40%;">Traditional Fragile Setup</th>
+                      <th style="width: 40%;">AutoQ Integrated Architecture</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>Traceability</strong></td>
+                      <td class="text-bad">❌ Disconnected. Tests live in Git; Jira tickets live in Jira. Nobody knows if REQ-890 has active automated test coverage without manual spreadsheets.</td>
+                      <td class="text-good">✓ 100% Traceable. Every test case is explicitly linked to a Kyxo requirement and parent Module. Coverage gaps are surfaced automatically.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Test Code Storage</strong></td>
+                      <td class="text-bad">❌ Stored in closed SaaS proprietary databases, creating vendor lock-in and impossible PR review workflows.</td>
+                      <td class="text-good">✓ Plain TypeScript files in application Git repo. Version-controlled alongside features with branch protection and pull request reviews.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Execution Isolation</strong></td>
+                      <td class="text-bad">❌ Shared VMs or monolithic Jenkins nodes. Tests leave residual cookies, dirty localStorage, and port clashes causing flakiness.</td>
+                      <td class="text-good">✓ Ephemeral Azure AKS Kata Sandboxes. Hardware-isolated microVM per shard destroyed immediately after test completion.</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Failure Handling</strong></td>
+                      <td class="text-bad">❌ Silent red builds. Developers ignore CI because they cannot tell whether a failure is a real bug or a renamed button locator.</td>
+                      <td class="text-good">✓ Automated 4-Way AI Triage. Differentiates Product Bug vs Outdated DOM Locator, generating a ready-to-merge Git PR diff for human approval.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Interactive Scope Decomposer Widget -->
+              <div class="scope-decomposer-card">
+                <div class="flex-align-center justify-between mb-2">
+                  <div class="flex-align-center gap-2">
+                    <span style="font-size: 1.2rem;">📦</span>
+                    <div>
+                      <h4 class="text-sm font-semibold text-white">Interactive Scope Decomposition: How Module / Epic Runs Work in Sandboxes</h4>
+                      <p class="text-xs text-secondary">See how AutoQ dynamically breaks down an execution trigger without static Git tags:</p>
+                    </div>
+                  </div>
+                  <span class="badge badge-accent">Dynamic Runtime Resolution</span>
+                </div>
+
+                <div class="scope-picker-toolbar">
+                  <button class="scope-picker-btn active" id="btn-scope-epic" onclick="selectArchScopeLevel('epic')">
+                    <span>📦 Whole Module Scope: Checkout & Payments (KYX-EPIC-01)</span>
+                  </button>
+                  <button class="scope-picker-btn" id="btn-scope-req" onclick="selectArchScopeLevel('req')">
+                    <span>🎯 Single Requirement Scope: Apple Pay (REQ-896)</span>
+                  </button>
+                  <button class="scope-picker-btn" id="btn-scope-test" onclick="selectArchScopeLevel('test')">
+                    <span>⚡ Single Test Case Scope: 3DS Payment (TC-104)</span>
+                  </button>
+                </div>
+
+                <div class="scope-tree-box" id="scope-decomposition-tree">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+
+              <!-- Living Requirements-to-Testcases Traceability Matrix -->
+              <div class="comparison-table-wrapper" style="margin-top: 20px;">
+                <div class="panel-header" style="border: none; padding: 0 0 10px 0;">
+                  <div>
+                    <h4 class="text-sm font-semibold">Living Traceability Matrix: Upstream Requirements ↔ Downstream Test Cases</h4>
+                    <p class="text-xs text-secondary mt-1">Bi-directional mapping maintained in Kyxo STLC and synchronized with Git code paths:</p>
+                  </div>
+                  <span class="badge badge-success">100% Automated Coverage</span>
+                </div>
+                <table class="comp-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 16%;">Business Epic / Module</th>
+                      <th style="width: 18%;">Kyxo Requirement ID & Title</th>
+                      <th style="width: 28%;">Acceptance Criteria (Gherkin Scenarios)</th>
+                      <th style="width: 18%;">Linked Test Cases</th>
+                      <th style="width: 10%;">Engine</th>
+                      <th style="width: 10%;">Coverage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <strong class="text-white">KYX-EPIC-01</strong>
+                        <div class="text-xs text-secondary">Checkout & Payments</div>
+                      </td>
+                      <td>
+                        <span class="badge badge-subtle font-mono text-cyan">REQ-890</span>
+                        <div class="text-xs text-white mt-1">Checkout Voucher & 3DS Gateway</div>
+                      </td>
+                      <td class="text-xs text-secondary">Given coupon AUTUMN20, When applied at checkout, Then subtotal discounts 20% and 3DS authorization token succeeds.</td>
+                      <td>
+                        <div class="flex-align-center gap-1" style="flex-wrap: wrap;">
+                          <span class="code-pill">TC-103 (@smoke)</span>
+                          <span class="code-pill">TC-104 (@regression)</span>
+                          <span class="code-pill">TC-105 (@e2e)</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-subtle">Playwright</span></td>
+                      <td><span class="status-pill status-pass">100% Covered</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong class="text-white">KYX-EPIC-01</strong>
+                        <div class="text-xs text-secondary">Checkout & Payments</div>
+                      </td>
+                      <td>
+                        <span class="badge badge-accent font-mono">REQ-896 [New]</span>
+                        <div class="text-xs text-white mt-1">One-Click Apple Pay & Biometric</div>
+                      </td>
+                      <td class="text-xs text-secondary">Given Apple Pay compatible device, When user authorizes biometric prompt, Then token returns within 2s and order completes.</td>
+                      <td>
+                        <div class="flex-align-center gap-1" style="flex-wrap: wrap;">
+                          <span class="code-pill">TC-301 (Happy Path)</span>
+                          <span class="code-pill">TC-302 (Fallback)</span>
+                          <span class="code-pill">TC-303 (Dismiss)</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-subtle">Playwright</span></td>
+                      <td><span class="status-pill status-pass">100% Covered</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong class="text-white">KYX-EPIC-01</strong>
+                        <div class="text-xs text-secondary">Checkout & Payments</div>
+                      </td>
+                      <td>
+                        <span class="badge badge-subtle font-mono text-cyan">REQ-892</span>
+                        <div class="text-xs text-white mt-1">Multi-Currency Dynamic Pricing</div>
+                      </td>
+                      <td class="text-xs text-secondary">Given user IP in UK, When browsing catalog, Then currency renders in GBP with live exchange rate and VAT rules.</td>
+                      <td>
+                        <div class="flex-align-center gap-1" style="flex-wrap: wrap;">
+                          <span class="code-pill">TC-201 (@regression)</span>
+                          <span class="code-pill">TC-202 (@pricing)</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-subtle">Playwright</span></td>
+                      <td><span class="status-pill status-pass">100% Covered</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong class="text-white">KYX-EPIC-02</strong>
+                        <div class="text-xs text-secondary">Identity & Authentication</div>
+                      </td>
+                      <td>
+                        <span class="badge badge-subtle font-mono text-cyan">REQ-885</span>
+                        <div class="text-xs text-white mt-1">SSO & OAuth2 Authentication</div>
+                      </td>
+                      <td class="text-xs text-secondary">Given active Okta session, When user navigates to portal, Then user is logged in automatically without password prompt.</td>
+                      <td>
+                        <div class="flex-align-center gap-1" style="flex-wrap: wrap;">
+                          <span class="code-pill">TC-101 (@smoke)</span>
+                          <span class="code-pill">TC-102 (@auth)</span>
+                          <span class="code-pill">TC-106 (@p0)</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-subtle">Playwright</span></td>
+                      <td><span class="status-pill status-pass">100% Covered</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong class="text-white">KYX-EPIC-03</strong>
+                        <div class="text-xs text-secondary">Storefront & Catalog</div>
+                      </td>
+                      <td>
+                        <span class="badge badge-subtle font-mono text-cyan">REQ-870</span>
+                        <div class="text-xs text-white mt-1">Search & Dynamic Facet Filters</div>
+                      </td>
+                      <td class="text-xs text-secondary">Given query string 'wireless headphones', When user filters by price under $100, Then only in-stock matching items render.</td>
+                      <td>
+                        <div class="flex-align-center gap-1" style="flex-wrap: wrap;">
+                          <span class="code-pill">TC-108 (@catalog)</span>
+                          <span class="code-pill">TC-109 (@search)</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-subtle">Playwright</span></td>
+                      <td><span class="status-pill status-pass">100% Covered</span></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <strong class="text-white">KYX-EPIC-04</strong>
+                        <div class="text-xs text-secondary">Orders & Invoicing</div>
+                      </td>
+                      <td>
+                        <span class="badge badge-subtle font-mono text-cyan">REQ-895</span>
+                        <div class="text-xs text-white mt-1">Automated PDF Invoice Webhook</div>
+                      </td>
+                      <td class="text-xs text-secondary">Given order status PAID, When payment confirmation received, Then ERP webhook triggers and customer receives PDF within 5s.</td>
+                      <td>
+                        <div class="flex-align-center gap-1" style="flex-wrap: wrap;">
+                          <span class="code-pill">TC-110 (@orders)</span>
+                          <span class="code-pill">TC-111 (@pdf)</span>
+                        </div>
+                      </td>
+                      <td><span class="badge badge-subtle">Playwright</span></td>
+                      <td><span class="status-pill status-pass">100% Covered</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- VIEW 4: SECURITY & MICROVM KATA CONTAINER ARCHITECTURE -->
+          <!-- ================================================================= -->
+          <div class="arch-view-section" id="view-arch-security">
+            <div class="security-arch-grid">
+              <!-- Left: Standard Docker vs Kata Containers -->
+              <div class="sec-card">
+                <div class="sec-card-header">
+                  <span style="font-size: 1.4rem;">🛡️</span>
+                  <div>
+                    <h3 class="sec-card-title">Kata Containers (MicroVM) Isolation Model</h3>
+                    <span class="text-xs text-muted">Hardware boundary isolation on Azure AKS</span>
+                  </div>
+                </div>
+
+                <!-- Visual Kata Containers Isolation Architecture -->
+                <div class="sec-visual-diagram">
+                  <!-- Traditional Shared Kernel Architecture (Vulnerable) -->
+                  <div class="sec-model-block sec-model-vulnerable">
+                    <div class="sec-model-header">
+                      <span style="font-size: 0.78rem; font-weight: 700; color: #fca5a5; display: flex; align-items: center; gap: 6px;">
+                        <span>⚠️ Standard Docker: Shared Host Linux Kernel</span>
+                      </span>
+                      <span class="badge badge-danger font-mono" style="font-size: 0.65rem;">Vulnerable to Breakout</span>
+                    </div>
+                    <div class="sec-boxes-row">
+                      <div class="sec-mini-box">
+                        <span class="font-mono text-xs font-semibold text-white">Test Shard 1 Container</span>
+                        <div class="text-xs text-muted" style="margin-top: 2px;">cgroups / chroot only</div>
+                      </div>
+                      <div class="sec-mini-box">
+                        <span class="font-mono text-xs font-semibold text-white">Test Shard 2 Container</span>
+                        <div class="text-xs text-muted" style="margin-top: 2px;">cgroups / chroot only</div>
+                      </div>
+                    </div>
+                    <div class="sec-shared-kernel-bar">
+                      <span>⚠️ Shared Host Linux Kernel (Zero Hardware Isolation Boundary)</span>
+                      <div style="font-size: 0.65rem; color: #f87171; font-weight: 400; margin-top: 2px;">Kernel exploit, infinite loop, or OOM crash in Shard 1 breaches host node and affects Shard 2</div>
+                    </div>
+                  </div>
+
+                  <!-- AutoQ MicroVM Architecture (Hardware Protected) -->
+                  <div class="sec-model-block sec-model-protected">
+                    <div class="sec-model-header">
+                      <span style="font-size: 0.78rem; font-weight: 700; color: #67e8f9; display: flex; align-items: center; gap: 6px;">
+                        <span>🛡️ AutoQ Architecture: AKS Kata Containers</span>
+                      </span>
+                      <span class="badge badge-success font-mono" style="font-size: 0.65rem;">Hardware MicroVM Isolated</span>
+                    </div>
+                    <div class="sec-boxes-row">
+                      <div class="sec-mini-box" style="border-color: rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.05);">
+                        <div class="flex-align-center justify-between">
+                          <span class="font-mono text-xs font-bold text-cyan">Shard 1 Kata Pod</span>
+                          <span class="status-pill status-pass" style="font-size: 0.6rem; padding: 1px 6px;">Active</span>
+                        </div>
+                        <div class="text-xs text-secondary mt-1">Playwright Worker Pod</div>
+                        <div class="sec-guest-kernel-box">
+                          ⚙️ Dedicated Guest Kernel (QEMU)
+                        </div>
+                        <div style="font-size: 0.62rem; color: var(--accent-cyan); margin-top: 3px;">Hardware Virtualization Boundary</div>
+                      </div>
+                      <div class="sec-mini-box" style="border-color: rgba(6, 182, 212, 0.4); background: rgba(6, 182, 212, 0.05);">
+                        <div class="flex-align-center justify-between">
+                          <span class="font-mono text-xs font-bold text-cyan">Shard 2 Kata Pod</span>
+                          <span class="status-pill status-pass" style="font-size: 0.6rem; padding: 1px 6px;">Active</span>
+                        </div>
+                        <div class="text-xs text-secondary mt-1">Playwright Worker Pod</div>
+                        <div class="sec-guest-kernel-box">
+                          ⚙️ Dedicated Guest Kernel (QEMU)
+                        </div>
+                        <div style="font-size: 0.62rem; color: var(--accent-cyan); margin-top: 3px;">Hardware Virtualization Boundary</div>
+                      </div>
+                    </div>
+                    <div class="sec-hypervisor-bar">
+                      <span>🖥️ Azure AKS Bare Metal Host Hypervisor (Physical Cloud Boundary)</span>
+                      <div style="font-size: 0.65rem; color: #a5b4fc; font-weight: 400; margin-top: 2px;">Guest kernel boot &lt; 2s · Zero cross-tenant data leakage · Ephemeral pod termination</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sec-list">
+                  <div class="sec-item">
+                    <span class="sec-item-icon">✓</span>
+                    <span><strong>Dedicated Guest Kernel:</strong> Each test shard executes inside its own dedicated lightweight Linux kernel (QEMU/Cloud-Hypervisor) booting in &lt; 2s.</span>
+                  </div>
+                  <div class="sec-item">
+                    <span class="sec-item-icon">✓</span>
+                    <span><strong>Zero Cross-Tenant Contamination:</strong> A crashed browser, infinite loop, or untrusted third-party script cannot touch other shards or the host cluster.</span>
+                  </div>
+                  <div class="sec-item">
+                    <span class="sec-item-icon">✓</span>
+                    <span><strong>Ephemeral Lifecycle:</strong> Container sandbox is spawned on-demand and permanently terminated immediately upon test completion.</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Secrets & KeyVault Ingress -->
+              <div class="sec-card">
+                <div class="sec-card-header">
+                  <span style="font-size: 1.4rem;">🔑</span>
+                  <div>
+                    <h3 class="sec-card-title">Zero-Trust KeyVault Secrets Architecture</h3>
+                    <span class="text-xs text-muted">Decoupled credentials and runtime injection</span>
+                  </div>
+                </div>
+
+                <!-- Visual Zero-Trust Pipeline Diagram -->
+                <div class="sec-visual-diagram">
+                  <!-- Step 1: Git Repository Zero Secrets -->
+                  <div class="sec-pipeline-step">
+                    <div class="flex-align-center justify-between" style="margin-bottom: 8px;">
+                      <div class="flex-align-center gap-2">
+                        <span class="step-circle" style="background: var(--accent-purple);">1</span>
+                        <span class="font-bold text-white text-xs">Developer Git Repository (Zero Hardcoded Secrets)</span>
+                      </div>
+                      <span class="badge badge-success font-mono" style="font-size: 0.65rem;">Gitleaks Verified</span>
+                    </div>
+                    <div style="background: #080c14; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 6px;">
+                      <div class="flex-align-center justify-between" style="font-size: 0.68rem; color: var(--text-muted); margin-bottom: 4px;">
+                        <span>📁 tests/e2e/checkout.spec.ts:14</span>
+                        <span class="font-mono text-cyan">process.env only</span>
+                      </div>
+                      <code class="font-mono" style="font-size: 0.74rem; color: #38bdf8;">const token = process.env.VOUCHER_SERVICE_KEY;</code>
+                    </div>
+                    <div class="flex-align-center gap-2" style="font-size: 0.68rem; color: var(--text-secondary);">
+                      <span class="text-success">✓</span> Zero credentials in commit history · Pre-commit git hooks block accidental secret commits
+                    </div>
+                  </div>
+
+                  <!-- Pipeline Connector -->
+                  <div class="sec-pipeline-arrow">
+                    <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); border-radius: var(--radius-pill); padding: 3px 12px; font-size: 0.68rem; color: #67e8f9;">
+                      <span>🔒 OIDC Managed Identity (Zero Permanent API Keys)</span>
+                      <span>▼</span>
+                    </div>
+                  </div>
+
+                  <!-- Step 2: Runtime KeyVault Injection -->
+                  <div class="sec-pipeline-step" style="border-color: rgba(99, 102, 241, 0.4); background: rgba(99, 102, 241, 0.05);">
+                    <div class="flex-align-center justify-between" style="margin-bottom: 8px;">
+                      <div class="flex-align-center gap-2">
+                        <span class="step-circle" style="background: var(--primary);">2</span>
+                        <span class="font-bold text-white text-xs">Azure AKS Sandbox Startup (Runtime Memory Only)</span>
+                      </div>
+                      <span class="badge badge-accent font-mono" style="font-size: 0.65rem;">In-Memory Only</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                      <div style="background: var(--bg-card-muted); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px 10px;">
+                        <span class="text-xs font-semibold text-white">🔐 Azure KeyVault</span>
+                        <div class="text-xs text-muted mt-1">HSM FIPS 140-2 Level 3 encrypted secret storage</div>
+                      </div>
+                      <div style="background: var(--bg-card-muted); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px 10px;">
+                        <span class="text-xs font-semibold text-cyan">⚡ Direct RAM Injection</span>
+                        <div class="text-xs text-muted mt-1">Zero disk writes. Memory scrubbed on sandbox exit</div>
+                      </div>
+                    </div>
+                    <div class="flex-align-center gap-2" style="font-size: 0.68rem; color: var(--text-secondary);">
+                      <span class="text-cyan">✓</span> Azure Monitor logs every access with Run ID &amp; caller principal for complete SOC2 compliance
+                    </div>
+                  </div>
+                </div>
+
+                <div class="sec-list">
+                  <div class="sec-item">
+                    <span class="sec-item-icon">✓</span>
+                    <span><strong>Zero Secrets in Code:</strong> Tests strictly consume environment variables (<code class="code-inline">$APP_BASE_URL</code>, <code class="code-inline">$TEST_USER_PASSWORD</code>).</span>
+                  </div>
+                  <div class="sec-item">
+                    <span class="sec-item-icon">✓</span>
+                    <span><strong>Azure KeyVault Integration:</strong> Secrets are fetched at execution time via Azure Managed Identities without permanent API keys.</span>
+                  </div>
+                  <div class="sec-item">
+                    <span class="sec-item-icon">✓</span>
+                    <span><strong>Audit Logging:</strong> Every secret read is recorded in Azure Monitor and mapped to the specific Run ID for compliance auditing.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ================================================================= -->
+          <!-- VIEW 5: 12 ARCHITECTURAL DECISIONS GRID (FILTERABLE) -->
+          <!-- ================================================================= -->
+          <div class="arch-view-section" id="view-arch-decisions">
+            <div class="panel">
+              <div class="panel-header">
+                <div>
+                  <h3 class="panel-title">12 Architectural Decisions & Justifications</h3>
+                  <p class="text-xs text-secondary mt-1">Foundational principles aligned with STLC industry best practices:</p>
+                </div>
+                <div class="decisions-filter-toolbar">
+                  <button class="dec-filter-btn active" onclick="filterDecisions('all')">All (12)</button>
+                  <button class="dec-filter-btn" onclick="filterDecisions('cloud')">☁️ Cloud & Sandboxes</button>
+                  <button class="dec-filter-btn" onclick="filterDecisions('ai')">🤖 AI & Code Integrity</button>
+                  <button class="dec-filter-btn" onclick="filterDecisions('stlc')">🔄 STLC & Traceability</button>
+                  <button class="dec-filter-btn" onclick="filterDecisions('adapters')">🔌 Pluggable Adapters</button>
+                </div>
+              </div>
+
+              <div class="decisions-grid" id="decisions-container">
+                <!-- Dynamically populated from data -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Interactive Create New Requirement Modal -->
+  <div class="modal-backdrop" id="new-requirement-modal" style="display: none;">
+    <div class="modal-card modal-card-lg" style="max-width: 640px;">
+      <div class="modal-header">
+        <div class="flex-align-center gap-2">
+          <span style="font-size: 1.2rem;">🎯</span>
+          <div>
+            <h3 class="modal-title">Define New Requirement (Kyxo STLC)</h3>
+            <span class="text-xs text-muted">Create upstream requirement, acceptance criteria & auto-generate test suites</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeNewRequirementModal()">✕</button>
+      </div>
+
+      <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+        <!-- Row 1: Title & Auto-Increment ID -->
+        <div class="form-row-split">
+          <div class="form-group flex-1">
+            <label class="form-label">Requirement Title <span class="text-danger">*</span></label>
+            <input type="text" class="input-control" id="modal-req-title" placeholder="e.g. One-Click Apple Pay & Biometric Checkout" value="One-Click Apple Pay & Biometric Checkout" style="width: 100%;" />
+          </div>
+          <div class="form-group" style="width: 140px;">
+            <label class="form-label">Requirement ID</label>
+            <input type="text" class="input-control font-mono" id="modal-req-id" value="REQ-896" readonly style="background: rgba(255,255,255,0.05); color: var(--accent-cyan); font-weight: 700;" />
+          </div>
+        </div>
+
+        <!-- Row 2: Module Domain & Priority -->
+        <div class="form-row-split mt-3">
+          <div class="form-group flex-1">
+            <label class="form-label">Domain / Epic</label>
+            <select class="select-control" id="modal-req-domain" style="width: 100%;">
+              <option value="Payments">Checkout & Payments</option>
+              <option value="Auth">Identity & Security</option>
+              <option value="Catalog">Storefront & Catalog</option>
+              <option value="Orders">Orders & Fulfillment</option>
+            </select>
+          </div>
+          <div class="form-group" style="width: 140px;">
+            <label class="form-label">Priority</label>
+            <select class="select-control" id="modal-req-priority" style="width: 100%;">
+              <option value="P0 - Critical (Smoke)">P0 - Blocker</option>
+              <option value="P1 - High (Regression)">P1 - High</option>
+              <option value="P2 - Medium">P2 - Medium</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- AI Draft Feature Button -->
+        <div class="ai-draft-trigger-card mt-3">
+          <div class="flex-align-center justify-between">
+            <div class="flex-align-center gap-2">
+              <span class="badge badge-sparkle">AI Assistant</span>
+              <span class="text-xs text-secondary">Auto-generate formal User Story & Gherkin criteria from title</span>
+            </div>
+            <button type="button" class="btn btn-xs btn-accent" onclick="aiDraftRequirementCriteria()">✨ Draft Criteria</button>
+          </div>
+        </div>
+
+        <!-- Row 3: User Story -->
+        <div class="form-group mt-3">
+          <label class="form-label">User Story</label>
+          <textarea class="input-control" id="modal-req-story" rows="2" style="width: 100%; resize: vertical;" placeholder="As a [role], I want [feature], so that [benefit]...">As an iOS Safari shopper, I want to authenticate checkout using Apple Pay biometric FaceID, so that I can complete purchases without typing billing details.</textarea>
+        </div>
+
+        <!-- Row 4: Acceptance Criteria (Gherkin format) -->
+        <div class="form-group mt-3">
+          <div class="flex-align-center justify-between mb-1">
+            <label class="form-label" style="margin-bottom: 0;">Acceptance Criteria (Gherkin Scenarios)</label>
+            <span class="text-xs text-muted font-mono">Given / When / Then</span>
+          </div>
+          <textarea class="input-control font-mono text-xs" id="modal-req-criteria" rows="4" style="width: 100%; resize: vertical; line-height: 1.5;" placeholder="Given [precondition]&#10;When [action]&#10;Then [expected outcome]">Scenario: Apple Pay Sheet Authorization
+Given user is in checkout on an Apple Pay enabled browser
+When user clicks "Buy with Apple Pay" button
+Then native payment sheet shows order subtotal and shipping
+And upon FaceID biometric approval, order confirmation token is returned
+
+Scenario: Card Fallback on Non-Apple Device
+Given user is on Chrome Desktop or Android
+When user visits checkout
+Then Apple Pay button is hidden and Standard Card form is displayed</textarea>
+        </div>
+
+        <!-- Row 5: Enterprise Sync & Automation Options -->
+        <div class="form-group mt-3">
+          <label class="form-label">STLC Automation Options</label>
+          <div class="checkbox-tag-group">
+            <label class="tag-checkbox-pill"><input type="checkbox" id="modal-req-sync-kyxo" checked /> 🔄 Bi-directional sync to Kyxo & Jira (Epic KYX)</label>
+            <label class="tag-checkbox-pill"><input type="checkbox" id="modal-req-auto-generate-tests" checked /> ⚡ Auto-generate Smoke & Regression test scripts</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNewRequirementModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmCreateNewRequirement()">🎯 Create Requirement & Generate Tests</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Create New Test Case Modal -->
+  <div class="modal-backdrop" id="new-testcase-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">📝 Create & Link New Test Case</h3>
+        <button class="modal-close-btn" onclick="closeNewTestCaseModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Test Case Name</label>
+          <input type="text" class="input-control" id="modal-new-test-name" placeholder="e.g. Verify 3DS Payment Authorization flow" value="Verify 3DS Payment Authorization flow" style="width: 100%;" />
+        </div>
+
+        <!-- 1. Requirement Link -->
+        <div class="form-group mt-3">
+          <div class="flex-align-center justify-between mb-1">
+            <label class="form-label" style="margin-bottom: 0;">1. Linked Requirement (Kyxo STLC)</label>
+            <button type="button" class="btn btn-xs btn-outline" onclick="openNewRequirementModal()">+ Create New</button>
+          </div>
+          <select class="select-control" id="modal-new-req-select" style="width: 100%;">
+            <option value="REQ-890">[REQ-890] Checkout Voucher Discount & 3DS Gateway</option>
+            <option value="REQ-885">[REQ-885] SSO & OAuth2 Corporate Authentication</option>
+            <option value="REQ-892">[REQ-892] Multi-Currency Dynamic Pricing Rules</option>
+            <option value="REQ-895">[REQ-895] Automated PDF Invoice & Webhook Dispatch</option>
+          </select>
+          <span class="field-hint">Automatically links traceability from Jira/Kyxo requirement down to Git code.</span>
+        </div>
+
+        <!-- 2. Test Suite & Purpose Tags -->
+        <div class="form-group mt-3">
+          <label class="form-label">2. Test Suite & Purpose Tags</label>
+          <div class="checkbox-tag-group">
+            <label class="tag-checkbox-pill"><input type="checkbox" id="modal-tag-smoke" checked /> @smoke (Critical P0 health check)</label>
+            <label class="tag-checkbox-pill"><input type="checkbox" id="modal-tag-regression" checked /> @regression (Full safety net)</label>
+            <label class="tag-checkbox-pill"><input type="checkbox" id="modal-tag-e2e" checked /> @e2e (Full journey flow)</label>
+          </div>
+        </div>
+
+        <!-- 3. Engine Choice -->
+        <div class="form-group mt-3">
+          <label class="form-label">3. Automation Engine</label>
+          <select class="select-control" id="modal-new-engine-select" style="width: 100%;">
+            <option value="Playwright">Playwright v1.48 (Recommended - TypeScript)</option>
+            <option value="Cypress">Cypress 13.x (JavaScript)</option>
+            <option value="Selenium">Selenium 4.x (Java/Python)</option>
+          </select>
+          <span class="field-hint">Azure sandbox will provision container environment matching this engine.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNewTestCaseModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmCreateNewTestCase()">✨ Open in AI Studio to Draft</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Architectural Component Detail Modal -->
+  <div class="modal-backdrop" id="component-detail-modal" style="display: none;">
+    <div class="modal-card modal-card-lg" style="max-width: 680px;">
+      <div class="modal-header">
+        <div class="flex-align-center gap-2">
+          <span style="font-size: 1.4rem;" id="comp-modal-icon">⚙️</span>
+          <div>
+            <h3 class="modal-title" id="comp-modal-title">Component Specification</h3>
+            <span class="text-xs text-muted" id="comp-modal-tier">TIER · ARCHITECTURE LAYER</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeCompModal()">✕</button>
+      </div>
+      <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
+        <p class="text-sm text-secondary mb-3" id="comp-modal-desc"></p>
+        
+        <div class="comp-spec-grid mb-3">
+          <div class="comp-spec-card">
+            <span class="comp-spec-label">INGRESS / PROTOCOL</span>
+            <span class="comp-spec-val" id="comp-modal-ingress">REST / WebSocket</span>
+          </div>
+          <div class="comp-spec-card">
+            <span class="comp-spec-label">EGRESS / TARGET</span>
+            <span class="comp-spec-val" id="comp-modal-egress">Redis / AKS Kata</span>
+          </div>
+          <div class="comp-spec-card">
+            <span class="comp-spec-label">SLA / LATENCY</span>
+            <span class="comp-spec-val text-success font-mono" id="comp-modal-sla">&lt; 120ms</span>
+          </div>
+          <div class="comp-spec-card">
+            <span class="comp-spec-label">RESILIENCE / SCALE</span>
+            <span class="comp-spec-val" id="comp-modal-resilience">Horizontal Pod Autoscaler</span>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <span class="text-xs font-semibold text-secondary mb-1" style="display: block;">KEY ARCHITECTURAL RESPONSIBILITIES:</span>
+          <div class="sec-list" id="comp-modal-responsibilities"></div>
+        </div>
+
+        <div>
+          <div class="flex-align-center justify-between mb-1">
+            <span class="text-xs font-semibold text-secondary">PAYLOAD / CONFIGURATION SPECIFICATION:</span>
+            <span class="text-xs text-muted font-mono" id="comp-modal-code-type">application/json</span>
+          </div>
+          <pre class="flow-code-col"><code id="comp-modal-code"></code></pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeCompModal()">Close</button>
+        <button class="btn btn-primary" onclick="closeCompModal(); switchArchTab('flow'); startFlowSimulation();">▶ Run Live Sequence Flow</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Quick Run Modal -->
+  <div class="modal-backdrop" id="quick-run-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">⚡ Trigger Quick Test Run</h3>
+        <button class="modal-close-btn" onclick="closeQuickRunModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-secondary mb-3">Spin up Azure AKS sandboxes immediately to execute selected suite:</p>
+        <div class="form-group">
+          <label class="form-label">Select Execution Scope (Suite or Module)</label>
+          <select class="select-control" id="modal-suite-picker">
+            <optgroup label="📦 By Feature / Module / Epic (Whole System)">
+              <option value="module-payments" selected>🛒 Module: Checkout & Payments (42 tests · 3 reqs)</option>
+              <option value="module-auth">🔐 Module: Identity & Authentication (34 tests · 1 req)</option>
+              <option value="module-catalog">🏬 Module: Storefront & Catalog (58 tests · 2 reqs)</option>
+              <option value="module-orders">🧾 Module: Orders & Invoicing (26 tests · 1 req)</option>
+            </optgroup>
+            <optgroup label="🏷️ By Cross-Cutting Suites">
+              <option value="smoke">⚡ Smoke Suite (24 tests - ~45s)</option>
+              <option value="all">📦 Full Regression Suite (184 tests - ~2m 30s)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group mt-3">
+          <label class="form-label">Target Environment</label>
+          <select class="select-control" id="modal-env-picker" onchange="setGlobalEnvironment(this.value)">
+            <option value="staging">Staging (https://staging.internal.app - East US)</option>
+            <option value="dev">Dev Preview (https://dev-04.internal.app)</option>
+            <option value="prod">Production Canary (https://app.production.com - Read-only tests)</option>
+          </select>
+        </div>
+        <div class="form-group mt-3">
+          <label class="form-label">Azure Sandboxes (Shards)</label>
+          <div class="flex-align-center gap-2">
+            <input type="number" class="input-control" id="modal-shard-count" value="4" min="1" max="16" style="width: 80px;" oninput="setGlobalShardCount(this.value)" />
+            <span class="text-sm text-muted">Kata isolated pods on AKS</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeQuickRunModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmModalRun()">Execute in Sandboxes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification System -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
